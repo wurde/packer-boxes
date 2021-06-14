@@ -38,18 +38,19 @@ endif
 .PHONY: build
 build: dependencies packer-init ## Build machine images.
 	@echo "Building machine images:"
-ifneq (,$(findstring consul-server, $(IMAGES)))
-	@cd ./consul-server && packer build ./consul-server.pkr.hcl
-endif
-ifneq (,$(findstring nomad-client, $(IMAGES)))
-	@cd ./nomad-client && packer build ./nomad-client.pkr.hcl
-endif
-ifneq (,$(findstring nomad-server, $(IMAGES)))
-	@cd ./nomad-server && packer build ./nomad-server.pkr.hcl
-endif
-ifneq (,$(findstring vault-server, $(IMAGES)))
-	@cd ./vault-server && packer build ./vault-server.pkr.hcl
-endif
+	@echo $(PKR_VAR_googlecompute_project_id)
+# ifneq (,$(findstring consul-server, $(IMAGES)))
+# 	@cd ./consul-server && packer build ./consul-server.pkr.hcl
+# endif
+# ifneq (,$(findstring nomad-client, $(IMAGES)))
+# 	@cd ./nomad-client && packer build ./nomad-client.pkr.hcl
+# endif
+# ifneq (,$(findstring nomad-server, $(IMAGES)))
+# 	@cd ./nomad-server && packer build ./nomad-server.pkr.hcl
+# endif
+# ifneq (,$(findstring vault-server, $(IMAGES)))
+# 	@cd ./vault-server && packer build ./vault-server.pkr.hcl
+# endif
 
 HELP_FORMAT="    \033[36m%-25s\033[0m %s\n"
 .PHONY: help
