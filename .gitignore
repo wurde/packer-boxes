@@ -7,5 +7,9 @@ crash.log
 # For built boxes
 *.box
 
+# Input variables
+*.pkrvars.hcl
+*.auto.pkrvars.hcl
+
 # Environment variables
 *.env

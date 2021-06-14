@@ -8,6 +8,11 @@ variable "consul_version" {
   default = "1.9.5"
 }
 
+variable "googlecompute_project_id" {
+  type        = string
+  description = "The Google Cloud project ID used to launch instances and store images."
+}
+
 # The locals block, also called the local-variable
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
@@ -17,6 +22,15 @@ locals {
 
   # The AWS Region used for the EC2 instance.
   aws_region = "us-east-2"
+
+  # The GCP Zone used to launch the instance.
+  gcp_zone = "us-central1-a"
+
+  # The GCP Source Image
+  gcp_source_image_family = "ubuntu-minimal-2104"
+
+  # The GCP machine type.
+  gcp_machine_type = "f1-micro"
 
   # The EC2 instance type.
   ec2_instance_type = "t3a.nano"
@@ -134,7 +148,7 @@ source "amazon-ebs" "consul-server" {
 
 # Create images for use with Azure Virtual Machines.
 # https://www.packer.io/docs/builders/azure
-source "azure-arm" "consul-server" { }
+source "azure-arm" "consul-server" {}
 
 # Create images for use with Docker.
 # https://www.packer.io/docs/builders/docker
@@ -153,15 +167,31 @@ source "docker" "consul-server" {
 
 # Create images for use with Google Compute Engine (GCE).
 # https://www.packer.io/docs/builders/googlecompute
-source "googlecompute" "consul-server" { }
+source "googlecompute" "consul-server" {
+  # The project ID that will be used to launch instances and store images.
+  project_id = var.googlecompute_project_id
+
+  # The source image to use to create the new image from.
+  # gcloud compute images list
+  source_image_family = local.gcp_source_image_family
+
+  # The zone in which to launch the instance used to create the image.
+  zone = local.gcp_zone
+
+  # The GCP machine type.
+  machine_type = local.gcp_machine_type
+
+  # The username to connect to SSH with.
+  ssh_username = "ubuntu"
+}
 
 # Create images for use with Linode.
 # https://www.packer.io/docs/builders/linode
-source "linode" "consul-server" { }
+source "linode" "consul-server" {}
 
 # Create images for use with OpenStack.
 # https://www.packer.io/docs/builders/openstack
-source "openstack" "consul-server" { }
+source "openstack" "consul-server" {}
 
 # The build block defines what builders are
 # started, how to provision them and if
@@ -176,7 +206,7 @@ build {
   sources = [
     #"sources.amazon-ebs.consul-server",
     #"sources.azure-arm.consul-server",
-    "sources.docker.consul-server",
+    #"sources.docker.consul-server",
     #"sources.googlecompute.consul-server",
     #"sources.linode.consul-server",
     #"sources.openstack.consul-server",
