@@ -171,14 +171,13 @@ source "amazon-ebs" "consul-server" {
   }
 
   tags = {
-    Name           = "Consul Server"
-    OS             = "Amazon Linux 2"
-    BuildTimestamp = timestamp()
+    name = "consul_server"
+    os   = "amazon_linux_2"
 
-    # Consul EC2 auto-join functionality enables bootstrapping
+    # Consul auto-join functionality enables bootstrapping
     # and auto-scaling Consul clusters via metadata.
     # https://www.consul.io/docs/install/cloud-auto-join
-    "Consul-Auto-Join" = "main"
+    consul_auto_join = "main"
   }
 }
 
@@ -241,14 +240,13 @@ source "googlecompute" "consul-server" {
   on_host_maintenance = "MIGRATE"
 
   labels = {
-    Name           = "Consul Server"
-    OS             = "Minimal Ubuntu 21.04"
-    BuildTimestamp = timestamp()
+    name = "consul_server"
+    os   = "minimal_ubuntu_2104"
 
-    # Consul EC2 auto-join functionality enables bootstrapping
+    # Consul auto-join functionality enables bootstrapping
     # and auto-scaling Consul clusters via metadata.
     # https://www.consul.io/docs/install/cloud-auto-join
-    "Consul-Auto-Join" = "main"
+    consul_auto_join = "main"
   }
 }
 
