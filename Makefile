@@ -1,3 +1,5 @@
+BUILDERS = amazon-ebs, azure-arm, docker, googlecompute, linode, openstack
+
 # Source environment variables
 -include .env
 
