@@ -19,7 +19,13 @@ locals {
   aws_region = "us-east-2"
 
   # The EC2 instance type.
-  instance_type = "t3a.nano"
+  ec2_instance_type = "t3a.nano"
+
+  # The Docker image.
+  docker_image = "amd64/alpine:3.13"
+
+  # The Docker repository to use.
+  docker_hub_user = "wurde"
 
   # The timestamp when the build ran.
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
@@ -51,8 +57,6 @@ locals {
 #
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "consul-server" {
-  skip_create_ami = true
-
   # Name of the AMI. Required. Must be unique.
   ami_name        = "consul-server-${local.version}-amazon-ebs-${local.timestamp}"
   ami_description = "An Amazon Linux 2 AMI for deploying a Consul server."
@@ -66,7 +70,7 @@ source "amazon-ebs" "consul-server" {
   profile = "default"
 
   # The EC2 instance type. Required.
-  instance_type = local.instance_type
+  instance_type = local.ec2_instance_type
   region        = local.aws_region
 
   # Default Linux system user account.
@@ -134,7 +138,18 @@ source "azure-arm" "consul-server" { }
 
 # Create images for use with Docker.
 # https://www.packer.io/docs/builders/docker
-source "docker" "consul-server" { }
+source "docker" "consul-server" {
+  # The base image for the Docker container that will be started.
+  # This image will be pulled from the Docker registry if it
+  # doesn't already exist.
+  image = local.docker_image
+
+  # The container will be committed to an image rather than exported.
+  commit = true
+
+  # Set a message for the commit.
+  message = "Build consul-server-${local.version}-docker-${local.timestamp}."
+}
 
 # Create images for use with Google Compute Engine (GCE).
 # https://www.packer.io/docs/builders/googlecompute
@@ -159,11 +174,17 @@ build {
   # set the 'image' field from the top-level source block in here, as well as
   # the 'name' and 'output_image' fields cannot be set in the top-level source block.
   sources = [
-    "sources.amazon-ebs.consul-server",
+    #"sources.amazon-ebs.consul-server",
     #"sources.azure-arm.consul-server",
-    #"sources.docker.consul-server",
+    "sources.docker.consul-server",
     #"sources.googlecompute.consul-server",
     #"sources.linode.consul-server",
     #"sources.openstack.consul-server",
   ]
+
+  post-processor "docker-tag" {
+    only       = ["docker.consul-server"]
+    repository = "${local.docker_hub_user}/consul-server-${local.version}-docker-${local.timestamp}"
+    tags       = [local.version, "latest"]
+  }
 }
