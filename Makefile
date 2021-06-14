@@ -7,7 +7,7 @@ default: help
 
 .PHONY: dependencies
 dependencies:
-ifeq ($(shell which packerr),)
+ifeq ($(shell which packer),)
 # Install packer
 	@rm -rf /tmp/packer
 	@git clone https://github.com/hashicorp/packer.git /tmp/packer
@@ -17,6 +17,18 @@ ifeq ($(shell which packerr),)
 	@cd /tmp/packer && make releasebin
 	@sudo mv -f /tmp/packer/bin/packer /usr/local/bin/packer
 endif
+
+.PHONY: build
+packer-init:
+	@echo "Installing packer plugins"
+ifeq ($(TF_VAR_BACKEND_S3_BUCKET),)
+	@packer init -upgrade ./consul-server/consul-server.pkr.hcl
+endif
+
+.PHONY: build
+build: dependencies packer-init ## Build machine images.
+	@echo "Building machine images:"
+# @cd ./consul-server && packer build ./consul-server.pkr.hcl
 
 HELP_FORMAT="    \033[36m%-25s\033[0m %s\n"
 .PHONY: help
