@@ -20,6 +20,9 @@ locals {
   # The version of the Consul Server image.
   version = "v1"
 
+  # The size of the disk in GB.
+  disk_size = 10
+
   # The AWS Region used for the EC2 instance.
   aws_region = "us-east-2"
 
@@ -144,6 +147,39 @@ source "amazon-ebs" "consul-server" {
     }
     Version = "2012-10-17"
   }
+
+  # Each instance has an associated root device volume, which is
+  # either an Amazon EBS volume or an instance store volume. You
+  # can use block device mapping to specify additional EBS volumes
+  # or instance store volumes.
+  launch_block_device_mappings {
+    device_name = "/dev/xvda"
+
+    # The size in GiB. gp2 = $0.10 per GB-month.
+    # https://aws.amazon.com/ebs/pricing
+    volume_size = local.disk_size
+
+    # Amazon EBS provides the following volume types:
+    # - General Purpose SSD (gp2 and gp3)
+    # - Provisioned IOPS SSD (io1 and io2)
+    # - Throughput Optimized HDD (st1)
+    # - Cold HDD (sc1)
+    # - Magnetic (standard)
+    volume_type = "gp2"
+
+    delete_on_termination = true
+  }
+
+  tags = {
+    Name           = "Consul Server"
+    OS             = "Amazon Linux 2"
+    BuildTimestamp = timestamp()
+
+    # Consul EC2 auto-join functionality enables bootstrapping
+    # and auto-scaling Consul clusters via metadata.
+    # https://www.consul.io/docs/install/cloud-auto-join
+    "Consul-Auto-Join" = "main"
+  }
 }
 
 # Create images for use with Azure Virtual Machines.
@@ -171,6 +207,10 @@ source "googlecompute" "consul-server" {
   # The project ID that will be used to launch instances and store images.
   project_id = var.googlecompute_project_id
 
+  # The unique name of the image.
+  image_name        = "consul-server-${local.version}-googlecompute-${local.timestamp}"
+  image_description = "A Minimal Ubuntu Image for deploying a Consul server."
+
   # The source image to use to create the new image from.
   # gcloud compute images list
   source_image_family = local.gcp_source_image_family
@@ -183,6 +223,33 @@ source "googlecompute" "consul-server" {
 
   # The username to connect to SSH with.
   ssh_username = "ubuntu"
+
+  # The size of the disk in GB. Defaults to 10GB (min 10GB).
+  disk_size = local.disk_size
+
+  # Type of disk used to back your instance, like pd-ssd,
+  # pd-balanced, or pd-standard. Defaults to pd-standard.
+  disk_type = "pd-ssd"
+
+  # Create a Shielded VM image with Secure Boot enabled. It helps
+  # ensure that the system only runs authentic software by verifying
+  # the digital signature of all boot components, and halting the
+  # boot process if signature verification fails.
+  enable_secure_boot = true
+
+  # Sets Host Maintenance Option. Choices are MIGRATE or TERMINATE.
+  on_host_maintenance = "MIGRATE"
+
+  labels = {
+    Name           = "Consul Server"
+    OS             = "Minimal Ubuntu 21.04"
+    BuildTimestamp = timestamp()
+
+    # Consul EC2 auto-join functionality enables bootstrapping
+    # and auto-scaling Consul clusters via metadata.
+    # https://www.consul.io/docs/install/cloud-auto-join
+    "Consul-Auto-Join" = "main"
+  }
 }
 
 # Create images for use with Linode.
@@ -207,7 +274,7 @@ build {
     #"sources.amazon-ebs.consul-server",
     #"sources.azure-arm.consul-server",
     #"sources.docker.consul-server",
-    #"sources.googlecompute.consul-server",
+    "sources.googlecompute.consul-server",
     #"sources.linode.consul-server",
     #"sources.openstack.consul-server",
   ]
