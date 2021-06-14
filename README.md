@@ -19,6 +19,10 @@ Below includes optional configurations.
 **./.env**
 
 ```bash
+# Configure which images are created
+# Default: consul-server, nomad-client, nomad-server, vault-server
+IMAGES = consul-server
+
 # Configure which builds run
 # Default: amazon-ebs, azure-arm, docker, googlecompute, linode, openstack
 BUILDERS = amazon-ebs, googlecompute

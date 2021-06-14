@@ -1,3 +1,4 @@
+IMAGES = consul-server nomad-client nomad-server vault-server
 BUILDERS = amazon-ebs, azure-arm, docker, googlecompute, linode, openstack
 
 # Source environment variables
@@ -18,17 +19,37 @@ ifeq ($(shell which packer),)
 	@sudo mv -f /tmp/packer/bin/packer /usr/local/bin/packer
 endif
 
-.PHONY: build
+.PHONY: packer-init
 packer-init:
 	@echo "Installing packer plugins"
-ifeq ($(TF_VAR_BACKEND_S3_BUCKET),)
+ifneq (,$(findstring consul-server, $(IMAGES)))
 	@packer init -upgrade ./consul-server/consul-server.pkr.hcl
+endif
+ifneq (,$(findstring nomad-client, $(IMAGES)))
+	@packer init -upgrade ./nomad-client/nomad-client.pkr.hcl
+endif
+ifneq (,$(findstring nomad-server, $(IMAGES)))
+	@packer init -upgrade ./nomad-server/nomad-server.pkr.hcl
+endif
+ifneq (,$(findstring vault-server, $(IMAGES)))
+	@packer init -upgrade ./vault-server/vault-server.pkr.hcl
 endif
 
 .PHONY: build
 build: dependencies packer-init ## Build machine images.
 	@echo "Building machine images:"
-# @cd ./consul-server && packer build ./consul-server.pkr.hcl
+ifneq (,$(findstring consul-server, $(IMAGES)))
+	@cd ./consul-server && packer build ./consul-server.pkr.hcl
+endif
+ifneq (,$(findstring nomad-client, $(IMAGES)))
+	@cd ./nomad-client && packer build ./nomad-client.pkr.hcl
+endif
+ifneq (,$(findstring nomad-server, $(IMAGES)))
+	@cd ./nomad-server && packer build ./nomad-server.pkr.hcl
+endif
+ifneq (,$(findstring vault-server, $(IMAGES)))
+	@cd ./vault-server && packer build ./vault-server.pkr.hcl
+endif
 
 HELP_FORMAT="    \033[36m%-25s\033[0m %s\n"
 .PHONY: help
