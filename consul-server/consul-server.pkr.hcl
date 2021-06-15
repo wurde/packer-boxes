@@ -11,6 +11,7 @@ variable "consul_version" {
 variable "googlecompute_project_id" {
   type        = string
   description = "The Google Cloud project ID used to launch instances and store images."
+  default     = ""
 }
 
 # The locals block, also called the local-variable
@@ -33,7 +34,7 @@ locals {
   gcp_source_image_family = "ubuntu-minimal-2104"
 
   # The GCP machine type.
-  gcp_machine_type = "f1-micro"
+  gcp_machine_type = "n1-standard-1"
 
   # The EC2 instance type.
   ec2_instance_type = "t3a.nano"
@@ -181,25 +182,6 @@ source "amazon-ebs" "consul-server" {
   }
 }
 
-# Create images for use with Azure Virtual Machines.
-# https://www.packer.io/docs/builders/azure
-source "azure-arm" "consul-server" {}
-
-# Create images for use with Docker.
-# https://www.packer.io/docs/builders/docker
-source "docker" "consul-server" {
-  # The base image for the Docker container that will be started.
-  # This image will be pulled from the Docker registry if it
-  # doesn't already exist.
-  image = local.docker_image
-
-  # The container will be committed to an image rather than exported.
-  commit = true
-
-  # Set a message for the commit.
-  message = "Build consul-server-${local.version}-docker-${local.timestamp}."
-}
-
 # Create images for use with Google Compute Engine (GCE).
 # https://www.packer.io/docs/builders/googlecompute
 source "googlecompute" "consul-server" {
@@ -250,13 +232,20 @@ source "googlecompute" "consul-server" {
   }
 }
 
-# Create images for use with Linode.
-# https://www.packer.io/docs/builders/linode
-source "linode" "consul-server" {}
+# Create images for use with Docker.
+# https://www.packer.io/docs/builders/docker
+source "docker" "consul-server" {
+  # The base image for the Docker container that will be started.
+  # This image will be pulled from the Docker registry if it
+  # doesn't already exist.
+  image = local.docker_image
 
-# Create images for use with OpenStack.
-# https://www.packer.io/docs/builders/openstack
-source "openstack" "consul-server" {}
+  # The container will be committed to an image rather than exported.
+  commit = true
+
+  # Set a message for the commit.
+  message = "Build consul-server-${local.version}-docker-${local.timestamp}."
+}
 
 # The build block defines what builders are
 # started, how to provision them and if
@@ -269,12 +258,9 @@ build {
   # set the 'image' field from the top-level source block in here, as well as
   # the 'name' and 'output_image' fields cannot be set in the top-level source block.
   sources = [
-    #"sources.amazon-ebs.consul-server",
-    #"sources.azure-arm.consul-server",
+    "sources.amazon-ebs.consul-server",
+    #"sources.googlecompute.consul-server",
     #"sources.docker.consul-server",
-    "sources.googlecompute.consul-server",
-    #"sources.linode.consul-server",
-    #"sources.openstack.consul-server",
   ]
 
   post-processor "docker-tag" {

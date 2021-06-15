@@ -13,3 +13,6 @@ crash.log
 
 # Environment variables
 *.env
+
+# Ignore temp certificates
+*.pem

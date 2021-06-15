@@ -24,8 +24,8 @@ Below includes optional configurations.
 IMAGES = consul-server
 
 # Configure which builds run
-# Default: amazon-ebs, azure-arm, docker, googlecompute, linode, openstack
-BUILDERS = amazon-ebs, googlecompute
+# Default: amazon-ebs, googlecompute, docker
+BUILDERS = amazon-ebs, docker
 ```
 
 ## Builders
@@ -35,30 +35,15 @@ BUILDERS = amazon-ebs, googlecompute
 The `amazon-ebs` Packer builder is able to create images for
 use with Amazon Elastic Compute Cloud (EC2).
 
-### Azure ARM
-
-The `azure-arm` Packer builder is able to create images for
-use with Azure Virtual Machines.
-
-### Docker
-
-The `docker` Packer builder is able to create images for
-use with Docker.
-
 ### Google Compute
 
 The `googlecompute` Packer builder is able to create images for
 use with Google Compute Engine (GCE).
 
-### Linode
+### Docker
 
-The `linode` Packer builder is able to create images for
-use with Linode.
-
-### OpenStack
-
-The `openstack` Packer builder is able to create images for
-use with OpenStack.
+The `docker` Packer builder is able to create images for
+use with Docker.
 
 ## License
 

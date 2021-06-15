@@ -1,5 +1,5 @@
 IMAGES = consul-server nomad-client nomad-server vault-server
-BUILDERS = amazon-ebs, azure-arm, docker, googlecompute, linode, openstack
+BUILDERS = amazon-ebs, googlecompute, docker
 
 # Source environment variables
 -include .env
