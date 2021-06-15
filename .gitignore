@@ -16,3 +16,6 @@ crash.log
 
 # Ignore temp certificates
 *.pem
+
+# Ignore all temporary files
+/tmp

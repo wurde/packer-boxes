@@ -258,14 +258,62 @@ build {
   # set the 'image' field from the top-level source block in here, as well as
   # the 'name' and 'output_image' fields cannot be set in the top-level source block.
   sources = [
-    "sources.amazon-ebs.consul-server",
+    #"sources.amazon-ebs.consul-server",
     #"sources.googlecompute.consul-server",
-    #"sources.docker.consul-server",
+    "sources.docker.consul-server",
   ]
 
-  post-processor "docker-tag" {
-    only       = ["docker.consul-server"]
-    repository = "${local.docker_hub_user}/consul-server-${local.version}-docker-${local.timestamp}"
-    tags       = [local.version, "latest"]
+  # Copy setup files. The "file" Packer provisioner uploads
+  # files to machines built by Packer.
+  #
+  # Warning: You can only upload files to locations that the
+  # provisioning user (generally not root) has permission to
+  # access. Creating files in /tmp and using a shell
+  # provisioner to move them into the final location is the
+  # only way to upload files to root owned locations.
+  #
+  # The existence of a trailing slash on the source path will
+  # determine whether the directory name will be embedded
+  # within the destination, or whether the destination will
+  # be created. If the source is /foo (no trailing slash),
+  # and the destination is /tmp, then the contents of /foo on
+  # the local machine will be uploaded to /tmp/foo on the
+  # remote machine. The foo directory on the remote machine
+  # will be created by Packer. If the source, however, is
+  # /foo/ (a trailing slash is present), and the destination
+  # is /tmp, then the contents of /foo will be uploaded into
+  # /tmp directly.
+  provisioner "file" {
+    source      = "./consul-server/scripts/"
+    destination = "/tmp"
+  }
+
+  # Run the local setup script.
+  provisioner "shell-local" {
+    inline = ["bash ./consul-server/scripts/setup-local.sh"]
+  }
+
+  # Copy the consul binary.
+  provisioner "file" {
+    source      = "/tmp/consul/bin/"
+    destination = "/tmp"
+  }
+
+  # Run the Amazon EBS script.
+  provisioner "shell" {
+    only   = ["amazon-ebs.consul-server"]
+    inline = ["bash /tmp/setup-amazon-ebs.sh"]
+  }
+
+  # Run the Google Compute script.
+  provisioner "shell" {
+    only   = ["googlecompute.consul-server"]
+    inline = ["bash /tmp/setup-googlecompute.sh"]
+  }
+
+  # Run the Docker script.
+  provisioner "shell" {
+    only   = ["docker.consul-server"]
+    inline = ["bash /tmp/setup-docker.sh"]
   }
 }
