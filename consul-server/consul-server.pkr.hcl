@@ -42,9 +42,6 @@ locals {
   # The Docker image.
   docker_image = "amd64/alpine:3.13"
 
-  # The Docker repository to use.
-  docker_hub_user = "wurde"
-
   # The timestamp when the build ran.
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 }

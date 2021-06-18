@@ -14,7 +14,7 @@ multi-cloud HashiStack.
 make build
 ```
 
-Below includes optional configurations.
+Optional configuration:
 
 **./.env**
 
