@@ -290,12 +290,12 @@ build {
     inline = ["sh ./consul-server/scripts/setup-local.sh"]
   }
 
-  ## Copy the consul binary.
-  #provisioner "file" {
-  #  source      = "/tmp/consul/bin/"
-  #  destination = "/tmp"
-  #  generated   = true
-  #}
+  # Copy the consul binary.
+  provisioner "file" {
+    source      = "./tmp/"
+    destination = "/tmp"
+    generated   = true
+  }
 
   # Run the Amazon EBS script.
   provisioner "shell" {

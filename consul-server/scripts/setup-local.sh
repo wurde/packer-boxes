@@ -12,7 +12,7 @@ check_golang() {
 
 install_consul() {
   echo "Installing the Consul binary"
-  if [ ! -d /tmp/consul ] || [ ! -f /tmp/consul/bin/consull ]; then
+  if [ ! -d /tmp/consul ] || [ ! -f /tmp/consul/bin/consul ]; then
     rm -rf /tmp/consul
     git clone https://github.com/hashicorp/consul.git /tmp/consul
     cd /tmp/consul
@@ -20,7 +20,7 @@ install_consul() {
     make tools
     make linux
     cd -
-    mkdir ./tmp
+    mkdir -p ./tmp
     cp /tmp/consul/bin/consul ./tmp/consul
   fi
 }
