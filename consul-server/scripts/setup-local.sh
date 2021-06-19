@@ -12,14 +12,16 @@ function check_golang() {
 
 function install_consul() {
   echo "Installing the Consul binary"
-  # TODO check if local binary exists
-  if [ ! -d /tmp/consul ]; then
-    rm -rf /tmp/consul && cd /tmp
-    git clone https://github.com/hashicorp/consul.git && cd consul
+  if [ ! -d /tmp/consul ] || [ ! -f /tmp/consul/bin/consull ]; then
+    rm -rf /tmp/consul
+    git clone https://github.com/hashicorp/consul.git /tmp/consul
+    cd consul
     git checkout v1.9.6
     make tools
     make linux
-    # TODO copy binary to local ./tmp/consul
+    cd -
+    mkdir ./tmp
+    cp /tmp/consul/bin/consul ./tmp/consul
   fi
 }
 
