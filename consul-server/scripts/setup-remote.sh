@@ -1,17 +1,17 @@
 #!/bin/sh
 
-function move_consul() {
+move_consul() {
   echo "Moving the Consul binary"
   sudo chown root:root /tmp/consul
   sudo mv /tmp/consul /usr/bin/consul
 }
 
-function adduser_consul() {
+adduser_consul() {
   echo "Creating a non-privileged user to run Consul"
   sudo useradd --system --home /etc/consul.d --shell /bin/false consul
 }
 
-function mkdir_consul_config() {
+mkdir_consul_config() {
   echo "Creating Consul's configuration directory"
   sudo mkdir --parents /etc/consul.d
   sudo touch /etc/consul.d/consul.hcl
@@ -21,26 +21,26 @@ function mkdir_consul_config() {
   sudo chown --recursive consul:consul /etc/consul.d
 }
 
-function mkdir_consul_data() {
+mkdir_consul_data() {
   echo "Creating Consul's data directory"
   sudo mkdir --parents /opt/consul
   sudo chown --recursive consul:consul /opt/consul
 }
 
-function create_encryption_key() {
+create_encryption_key() {
   echo "Generating a new 32-byte encryption key"
   consul keygen | sudo tee /etc/consul.d/key
   sudo chown consul:consul /etc/consul.d/key
 }
 
-function create_certificate_authority() {
+create_certificate_authority() {
   echo "Creating a Consul Certificate Authority"
   cd /etc/consul.d
   sudo consul tls ca create
   sudo chown --recursive consul:consul /etc/consul.d
 }
 
-function create_tls_certificates() {
+create_tls_certificates() {
   echo "Generating TLS certificates for RPC encryption"
   sudo consul tls cert create -server -dc aws-us-east-2
   sudo consul tls cert create -server -dc aws-us-east-2
@@ -48,7 +48,7 @@ function create_tls_certificates() {
   sudo chown --recursive consul:consul /etc/consul.d
 }
 
-function configure_consul() {
+configure_consul() {
   echo "Configuring Consul"
 
   cat << EOF | sudo tee /etc/consul.d/consul.hcl
@@ -77,7 +77,7 @@ EOF
   sudo chown consul:consul /etc/consul.d/consul.hcl
 }
 
-function configure_server() {
+configure_server() {
   echo "Configuring Consul server"
 
   cat << EOF | sudo tee /etc/consul.d/server.hcl
@@ -93,7 +93,7 @@ EOF
   sudo chown consul:consul /etc/consul.d/server.hcl
 }
 
-function configure_systemd() {
+configure_systemd() {
   echo "Configuring the Consul process"
 
   cat << EOF | sudo tee /usr/lib/systemd/system/consul.service
@@ -120,19 +120,19 @@ WantedBy=multi-user.target
 EOF
 }
 
-function validate_config() {
+validate_config() {
   echo "Validating the Consul configuration"
   sudo consul validate /etc/consul.d/consul.hcl
 }
 
-function start_consul() {
+start_consul() {
   echo "Starting the Consul service"
   sudo systemctl enable consul
   sudo systemctl start consul
   sudo systemctl status consul
 }
 
-function main() {
+main() {
   echo "Running"
 
   # move_consul

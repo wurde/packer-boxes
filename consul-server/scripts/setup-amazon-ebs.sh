@@ -1,18 +1,18 @@
 #!/bin/sh
 
-function setTimezone() {
+setTimezone() {
   echo "Setting timezone to UTC"
   sudo timedatectl set-timezone UTC
 }
 
 # Amazon Linux instances use the yum package manager. It can
 # install, remove, and update software.
-function updatePackages() {
+updatePackages() {
   echo "Updating packages"
   sudo yum update -y
 }
 
-function main() {
+main() {
   echo "Running"
 
   setTimezone

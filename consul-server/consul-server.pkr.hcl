@@ -285,10 +285,10 @@ build {
     destination = "/tmp"
   }
 
-  ## Run the local setup script.
-  #provisioner "shell-local" {
-  #  inline = ["sh ./consul-server/scripts/setup-local.sh"]
-  #}
+  # Run the local setup script.
+  provisioner "shell-local" {
+    inline = ["sh ./consul-server/scripts/setup-local.sh"]
+  }
 
   ## Copy the consul binary.
   #provisioner "file" {

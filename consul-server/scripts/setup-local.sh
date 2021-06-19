@@ -1,16 +1,16 @@
 #!/bin/sh
 
-function check_git() {
+check_git() {
   echo "Verifying git is installed"
   git version
 }
 
-function check_golang() {
+check_golang() {
   echo "Verifying golang is installed"
   go version
 }
 
-function install_consul() {
+install_consul() {
   echo "Installing the Consul binary"
   if [ ! -d /tmp/consul ] || [ ! -f /tmp/consul/bin/consull ]; then
     rm -rf /tmp/consul
@@ -25,7 +25,7 @@ function install_consul() {
   fi
 }
 
-function main() {
+main() {
   echo "Running"
 
   check_git
