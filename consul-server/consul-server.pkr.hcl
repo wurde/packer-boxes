@@ -315,8 +315,8 @@ build {
     inline = ["sh /tmp/setup-docker.sh"]
   }
 
-  ## Run the remote setup script.
-  #provisioner "shell" {
-  #  inline = ["sh /tmp/setup-remote.sh"]
-  #}
+  # Run the remote setup script.
+  provisioner "shell" {
+    inline = ["sh /tmp/setup-remote.sh"]
+  }
 }
