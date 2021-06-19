@@ -14,18 +14,28 @@ multi-cloud HashiStack.
 make build
 ```
 
+Required configuration:
+
+**./main.pkvars.hcl**
+
+```bash
+# If using googlecompute then you must specify
+# a Google Cloud Project ID.
+googlecompute_project_id = "<unique_project_name>"
+```
+
 Optional configuration:
 
 **./.env**
 
 ```bash
-# Configure which images are created
-# Default: consul-server, nomad-client, nomad-server, vault-server
-IMAGES = consul-server
-
 # Configure which builds run
-# Default: amazon-ebs, googlecompute, docker
-BUILDERS = amazon-ebs, docker
+# Default: 
+#   amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-server,
+#   amazon-ebs.nomad-client,  googlecompute.nomad-client,  docker.nomad-client,
+#   amazon-ebs.nomad-server,  googlecompute.nomad-server,  docker.nomad-server,
+#   amazon-ebs.vault-server,  googlecompute.vault-server,  docker.vault-server
+BUILDS = amazon-ebs.consul-server, docker.consul-server
 ```
 
 ## Builders

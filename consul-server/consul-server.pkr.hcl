@@ -294,6 +294,7 @@ build {
   provisioner "file" {
     source      = "/tmp/consul/bin/"
     destination = "/tmp"
+    generated   = true
   }
 
   # Run the Amazon EBS script.

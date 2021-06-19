@@ -1,5 +1,4 @@
-IMAGES = consul-server nomad-client nomad-server vault-server
-BUILDERS = amazon-ebs, googlecompute, docker
+BUILDS = amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-server, amazon-ebs.nomad-client,  googlecompute.nomad-client, docker.nomad-client, amazon-ebs.nomad-server, googlecompute.nomad-server, docker.nomad-server, amazon-ebs.vault-server, googlecompute.vault-server, docker.vault-server
 
 # Source environment variables
 -include .env
@@ -22,34 +21,18 @@ endif
 .PHONY: packer-init
 packer-init:
 	@echo "Installing packer plugins"
-ifneq (,$(findstring consul-server, $(IMAGES)))
 	@packer init -upgrade ./consul-server/consul-server.pkr.hcl
-endif
-ifneq (,$(findstring nomad-client, $(IMAGES)))
 	@packer init -upgrade ./nomad-client/nomad-client.pkr.hcl
-endif
-ifneq (,$(findstring nomad-server, $(IMAGES)))
 	@packer init -upgrade ./nomad-server/nomad-server.pkr.hcl
-endif
-ifneq (,$(findstring vault-server, $(IMAGES)))
 	@packer init -upgrade ./vault-server/vault-server.pkr.hcl
-endif
 
 .PHONY: build
 build: dependencies packer-init ## Build machine images.
 	@echo "Building machine images:"
-ifneq (,$(findstring consul-server, $(IMAGES)))
-	packer build -var-file=main.pkrvars.hcl ./consul-server/consul-server.pkr.hcl
-endif
-ifneq (,$(findstring nomad-client, $(IMAGES)))
-	packer build -var-file=main.pkrvars.hcl ./nomad-client/nomad-client.pkr.hcl
-endif
-ifneq (,$(findstring nomad-server, $(IMAGES)))
-	packer build -var-file=main.pkrvars.hcl ./nomad-server/nomad-server.pkr.hcl
-endif
-ifneq (,$(findstring vault-server, $(IMAGES)))
-	packer build -var-file=main.pkrvars.hcl ./vault-server/vault-server.pkr.hcl
-endif
+	@packer build -only=$(BUILDS) -var-file=main.pkrvars.hcl ./consul-server/consul-server.pkr.hcl
+	@packer build -only=$(BUILDS) -var-file=main.pkrvars.hcl ./nomad-client/nomad-client.pkr.hcl
+	@packer build -only=$(BUILDS) -var-file=main.pkrvars.hcl ./nomad-server/nomad-server.pkr.hcl
+	@packer build -only=$(BUILDS) -var-file=main.pkrvars.hcl ./vault-server/vault-server.pkr.hcl
 
 HELP_FORMAT="    \033[36m%-25s\033[0m %s\n"
 .PHONY: help
