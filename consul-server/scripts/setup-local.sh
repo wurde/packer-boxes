@@ -15,7 +15,7 @@ function install_consul() {
   if [ ! -d /tmp/consul ] || [ ! -f /tmp/consul/bin/consull ]; then
     rm -rf /tmp/consul
     git clone https://github.com/hashicorp/consul.git /tmp/consul
-    cd consul
+    cd /tmp/consul
     git checkout v1.9.6
     make tools
     make linux
