@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 function check_git() {
   echo "Verifying git is installed"

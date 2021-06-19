@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 function setTimezone() {
   echo "Setting timezone to UTC"
