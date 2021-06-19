@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 function move_consul() {
   echo "Moving the Consul binary"

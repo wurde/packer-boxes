@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 function check_git() {
   echo "Verifying git is installed"

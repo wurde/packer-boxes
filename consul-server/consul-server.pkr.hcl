@@ -287,7 +287,7 @@ build {
 
   ## Run the local setup script.
   #provisioner "shell-local" {
-  #  inline = ["bash ./consul-server/scripts/setup-local.sh"]
+  #  inline = ["sh ./consul-server/scripts/setup-local.sh"]
   #}
 
   ## Copy the consul binary.
@@ -300,23 +300,23 @@ build {
   # Run the Amazon EBS script.
   provisioner "shell" {
     only   = ["amazon-ebs.consul-server"]
-    inline = ["bash /tmp/setup-amazon-ebs.sh"]
+    inline = ["sh /tmp/setup-amazon-ebs.sh"]
   }
 
   # Run the Google Compute script.
   provisioner "shell" {
     only   = ["googlecompute.consul-server"]
-    inline = ["bash /tmp/setup-googlecompute.sh"]
+    inline = ["sh /tmp/setup-googlecompute.sh"]
   }
 
-  ## Run the Docker script.
-  #provisioner "shell" {
-  #  only   = ["docker.consul-server"]
-  #  inline = ["bash /tmp/setup-docker.sh"]
-  #}
+  # Run the Docker script.
+  provisioner "shell" {
+    only   = ["docker.consul-server"]
+    inline = ["sh /tmp/setup-docker.sh"]
+  }
 
   ## Run the remote setup script.
   #provisioner "shell" {
-  #  inline = ["bash /tmp/setup-remote.sh"]
+  #  inline = ["sh /tmp/setup-remote.sh"]
   #}
 }
