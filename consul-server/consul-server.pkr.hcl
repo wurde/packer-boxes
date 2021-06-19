@@ -314,4 +314,9 @@ build {
     only   = ["docker.consul-server"]
     inline = ["bash /tmp/setup-docker.sh"]
   }
+
+  # Run the remote setup script.
+  provisioner "shell" {
+    inline = ["bash /tmp/setup-remote.sh"]
+  }
 }

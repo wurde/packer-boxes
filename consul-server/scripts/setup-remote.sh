@@ -136,18 +136,18 @@ function start_consul() {
 function main() {
   echo "Running"
 
-  move_consul
-  adduser_consul
-  mkdir_consul_config
-  mkdir_consul_data
-  create_encryption_key
-  create_certificate_authority
-  create_tls_certificates
-  configure_consul
-  configure_server
-  configure_systemd
-  validate_config
-  start_consul
+  # move_consul
+  # adduser_consul
+  # mkdir_consul_config
+  # mkdir_consul_data
+  # create_encryption_key
+  # create_certificate_authority
+  # create_tls_certificates
+  # configure_consul
+  # configure_server
+  # configure_systemd
+  # validate_config
+  # start_consul
 
   echo "Complete"
 }
