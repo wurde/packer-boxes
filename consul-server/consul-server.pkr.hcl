@@ -255,8 +255,8 @@ build {
   # set the 'image' field from the top-level source block in here, as well as
   # the 'name' and 'output_image' fields cannot be set in the top-level source block.
   sources = [
-    #"sources.amazon-ebs.consul-server",
-    #"sources.googlecompute.consul-server",
+    "sources.amazon-ebs.consul-server",
+    "sources.googlecompute.consul-server",
     "sources.docker.consul-server",
   ]
 
