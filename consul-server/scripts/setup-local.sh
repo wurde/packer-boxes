@@ -16,7 +16,7 @@ install_consul() {
     rm -rf /tmp/consul
     git clone https://github.com/hashicorp/consul.git /tmp/consul
     cd /tmp/consul
-    git checkout v1.9.6
+    git checkout $CONSUL_VERSION
     make tools
     make linux
     cd -

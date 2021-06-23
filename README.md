@@ -36,6 +36,9 @@ Optional configuration:
 #   amazon-ebs.nomad-server,  googlecompute.nomad-server,  docker.nomad-server,
 #   amazon-ebs.vault-server,  googlecompute.vault-server,  docker.vault-server
 BUILDS = amazon-ebs.consul-server, docker.consul-server
+
+# Configure which Consul version to install. Default: v1.10
+CONSUL_VERSION = v1.10
 ```
 
 ## Builders
