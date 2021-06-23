@@ -7,13 +7,6 @@ setTimezone() {
   echo "UTC" > /etc/timezone
 }
 
-# Alpine doesn't need sudo, but other OS do.
-# This enables cross-OS script support.
-installSudo() {
-  echo "Installing sudo"
-  apk add sudo
-}
-
 # Alpine instances use the apk package manager. It can
 # install, remove, and update software.
 updatePackages() {
@@ -23,56 +16,57 @@ updatePackages() {
 
 move_consul() {
   echo "Moving the Consul binary"
-  sudo chown root:root /tmp/consul
-  sudo mv /tmp/consul /usr/bin/consul
+  chown root:root /tmp/consul
+  mv /tmp/consul /usr/bin/consul
 }
 
 adduser_consul() {
   echo "Creating a non-privileged user to run Consul"
-  sudo useradd --system --home /etc/consul.d --shell /bin/false consul
+  addgroup -S consul
+  adduser -S -h /etc/consul.d -s /bin/false -G consul consul
 }
 
 mkdir_consul_config() {
   echo "Creating Consul's configuration directory"
-  sudo mkdir --parents /etc/consul.d
-  sudo touch /etc/consul.d/consul.hcl
-  sudo chmod 640 /etc/consul.d/consul.hcl
-  sudo touch /etc/consul.d/server.hcl
-  sudo chmod 640 /etc/consul.d/server.hcl
-  sudo chown --recursive consul:consul /etc/consul.d
+  mkdir --parents /etc/consul.d
+  touch /etc/consul.d/consul.hcl
+  chmod 640 /etc/consul.d/consul.hcl
+  touch /etc/consul.d/server.hcl
+  chmod 640 /etc/consul.d/server.hcl
+  chown --recursive consul:consul /etc/consul.d
 }
 
 mkdir_consul_data() {
   echo "Creating Consul's data directory"
-  sudo mkdir --parents /opt/consul
-  sudo chown --recursive consul:consul /opt/consul
+  mkdir --parents /opt/consul
+  chown --recursive consul:consul /opt/consul
 }
 
 create_encryption_key() {
   echo "Generating a new 32-byte encryption key"
-  consul keygen | sudo tee /etc/consul.d/key
-  sudo chown consul:consul /etc/consul.d/key
+  consul keygen | tee /etc/consul.d/key
+  chown consul:consul /etc/consul.d/key
 }
 
 create_certificate_authority() {
   echo "Creating a Consul Certificate Authority"
   cd /etc/consul.d
-  sudo consul tls ca create
-  sudo chown --recursive consul:consul /etc/consul.d
+  consul tls ca create
+  chown --recursive consul:consul /etc/consul.d
 }
 
 create_tls_certificates() {
   echo "Generating TLS certificates for RPC encryption"
-  sudo consul tls cert create -server -dc aws-us-east-2
-  sudo consul tls cert create -server -dc aws-us-east-2
-  sudo consul tls cert create -server -dc aws-us-east-2
-  sudo chown --recursive consul:consul /etc/consul.d
+  consul tls cert create -server -dc aws-us-east-2
+  consul tls cert create -server -dc aws-us-east-2
+  consul tls cert create -server -dc aws-us-east-2
+  chown --recursive consul:consul /etc/consul.d
 }
 
 configure_consul() {
   echo "Configuring Consul"
 
-  cat << EOF | sudo tee /etc/consul.d/consul.hcl
+  cat << EOF | tee /etc/consul.d/consul.hcl
 node = consul-node-one
 datacenter = "aws-us-east-2"
 data_dir = "/opt/consul"
@@ -95,13 +89,13 @@ performance {
   raft_multiplier = 5
 }
 EOF
-  sudo chown consul:consul /etc/consul.d/consul.hcl
+  chown consul:consul /etc/consul.d/consul.hcl
 }
 
 configure_server() {
   echo "Configuring Consul server"
 
-  cat << EOF | sudo tee /etc/consul.d/server.hcl
+  cat << EOF | tee /etc/consul.d/server.hcl
 server = true
 client_addr = "0.0.0.0"
 #bootstrap_expect = 1
@@ -111,13 +105,13 @@ client_addr = "0.0.0.0"
 #  metrics_provider = "prometheus"
 #}
 EOF
-  sudo chown consul:consul /etc/consul.d/server.hcl
+  chown consul:consul /etc/consul.d/server.hcl
 }
 
 configure_systemd() {
   echo "Configuring the Consul process"
 
-  cat << EOF | sudo tee /usr/lib/systemd/system/consul.service
+  cat << EOF | tee /usr/lib/systemd/system/consul.service
 [Unit]
 Description="HashiCorp Consul - A service mesh solution"
 Documentation=https://www.consul.io/
@@ -143,15 +137,15 @@ EOF
 
 validate_config() {
   echo "Validating the Consul configuration"
-  sudo consul validate /etc/consul.d/consul.hcl
+  consul validate /etc/consul.d/consul.hcl
 }
 
 start_consul() {
   echo "Starting the Consul service"
   # TODO alpine doesn't have systemd!
-  sudo systemctl enable consul
-  sudo systemctl start consul
-  sudo systemctl status consul
+  systemctl enable consul
+  systemctl start consul
+  systemctl status consul
 }
 
 main() {
@@ -160,10 +154,10 @@ main() {
   setTimezone
   installSudo
   updatePackages
-  # move_consul
-  # adduser_consul
-  # mkdir_consul_config
-  # mkdir_consul_data
+  move_consul
+  adduser_consul
+  mkdir_consul_config
+  mkdir_consul_data
   # create_encryption_key
   # create_certificate_authority
   # create_tls_certificates

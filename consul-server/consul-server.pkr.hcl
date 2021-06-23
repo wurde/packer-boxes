@@ -290,28 +290,28 @@ build {
     inline = ["sh ./consul-server/scripts/setup-local.sh"]
   }
 
-#  # Copy the consul binary.
-#  provisioner "file" {
-#    source      = "./tmp/"
-#    destination = "/tmp"
-#    generated   = true
-#  }
-#
-#  # Run the Amazon EBS script.
-#  provisioner "shell" {
-#    only   = ["amazon-ebs.consul-server"]
-#    inline = ["sh /tmp/setup-amazon-ebs.sh"]
-#  }
-#
-#  # Run the Google Compute script.
-#  provisioner "shell" {
-#    only   = ["googlecompute.consul-server"]
-#    inline = ["sh /tmp/setup-googlecompute.sh"]
-#  }
-#
-#  # Run the Docker script.
-#  provisioner "shell" {
-#    only   = ["docker.consul-server"]
-#    inline = ["sh /tmp/setup-docker.sh"]
-#  }
+  # Copy the consul binary.
+  provisioner "file" {
+    source      = "./tmp/"
+    destination = "/tmp"
+    generated   = true
+  }
+
+  # Run the Amazon EBS script.
+  provisioner "shell" {
+    only   = ["amazon-ebs.consul-server"]
+    inline = ["sh /tmp/setup-amazon-ebs.sh"]
+  }
+
+  # Run the Google Compute script.
+  provisioner "shell" {
+    only   = ["googlecompute.consul-server"]
+    inline = ["sh /tmp/setup-googlecompute.sh"]
+  }
+
+  # Run the Docker script.
+  provisioner "shell" {
+    only   = ["docker.consul-server"]
+    inline = ["sh /tmp/setup-docker.sh"]
+  }
 }
