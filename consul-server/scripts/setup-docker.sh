@@ -57,9 +57,9 @@ create_certificate_authority() {
 
 create_tls_certificates() {
   echo "Generating TLS certificates for RPC encryption"
-  consul tls cert create -server -dc aws-us-east-2
-  consul tls cert create -server -dc aws-us-east-2
-  consul tls cert create -server -dc aws-us-east-2
+  consul tls cert create -server -dc docker-dc1
+  consul tls cert create -server -dc docker-dc1
+  consul tls cert create -server -dc docker-dc1
   chown --recursive consul:consul /etc/consul.d
 }
 
@@ -67,17 +67,15 @@ configure_consul() {
   echo "Configuring Consul"
 
   cat << EOF | tee /etc/consul.d/consul.hcl
-node = consul-node-one
-datacenter = "aws-us-east-2"
+datacenter = "docker-dc1"
 data_dir = "/opt/consul"
 encrypt = "qDOPBEr+/oUVeOFQOnVypxwDaHzLrD+lvjo5vCEBbZ0="
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
-cert_file = "/etc/consul.d/aws-us-east-2-server-consul-0.pem"
-key_file = "/etc/consul.d/aws-us-east-2-server-consul-0-key.pem"
+cert_file = "/etc/consul.d/docker-dc1-server-consul-0.pem"
+key_file = "/etc/consul.d/docker-dc1-server-consul-0-key.pem"
 verify_incoming = true
 verify_outgoing = true
 verify_server_hostname = true
-retry_join = ["provider=aws tag_key=Consul-Auto-Join tag_value=main region=us-east-2"]
 
 #acl = {
 #  enabled = true
@@ -98,7 +96,7 @@ configure_server() {
   cat << EOF | tee /etc/consul.d/server.hcl
 server = true
 client_addr = "0.0.0.0"
-#bootstrap_expect = 1
+bootstrap_expect = 1
 
 #ui_config {
 #  enabled = true
@@ -106,6 +104,11 @@ client_addr = "0.0.0.0"
 #}
 EOF
   chown consul:consul /etc/consul.d/server.hcl
+}
+
+validate_config() {
+  echo "Validating the Consul configuration"
+  consul validate /etc/consul.d/consul.hcl
 }
 
 configure_systemd() {
@@ -135,36 +138,30 @@ WantedBy=multi-user.target
 EOF
 }
 
-validate_config() {
-  echo "Validating the Consul configuration"
-  consul validate /etc/consul.d/consul.hcl
-}
-
 start_consul() {
   echo "Starting the Consul service"
   # TODO alpine doesn't have systemd!
-  systemctl enable consul
-  systemctl start consul
-  systemctl status consul
+  # systemctl enable consul
+  # systemctl start consul
+  # systemctl status consul
 }
 
 main() {
   echo "Running"
 
   setTimezone
-  installSudo
   updatePackages
   move_consul
   adduser_consul
   mkdir_consul_config
   mkdir_consul_data
-  # create_encryption_key
-  # create_certificate_authority
-  # create_tls_certificates
-  # configure_consul
-  # configure_server
+  create_encryption_key
+  create_certificate_authority
+  create_tls_certificates
+  configure_consul
+  configure_server
+  validate_config
   # configure_systemd
-  # validate_config
   # start_consul
 
   echo "Complete"

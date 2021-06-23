@@ -140,9 +140,9 @@ validate_config() {
 
 start_consul() {
   echo "Starting the Consul service"
-  # TODO alpine doesn't have systemd!
+  sudo systemctl daemon-reload
   sudo systemctl enable consul
-  sudo systemctl start consul
+  sudo systemctl restart consul && sleep 5
   sudo systemctl status consul
 }
 
