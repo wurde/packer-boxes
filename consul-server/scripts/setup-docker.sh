@@ -14,6 +14,11 @@ updatePackages() {
   apk -U upgrade
 }
 
+installOpenRCInit() {
+  echo "Installing OpenRC init system"
+  apk add open-rc
+}
+
 move_consul() {
   echo "Moving the Consul binary"
   chown root:root /tmp/consul
@@ -111,39 +116,41 @@ validate_config() {
   consul validate /etc/consul.d/consul.hcl
 }
 
-configure_systemd() {
+configureInit() {
   echo "Configuring the Consul process"
+  cat << EOF | tee /etc/init.d/consul.service
+#!/sbin/openrc-run
 
-  cat << EOF | tee /usr/lib/systemd/system/consul.service
-[Unit]
-Description="HashiCorp Consul - A service mesh solution"
-Documentation=https://www.consul.io/
-Requires=network-online.target
-After=network-online.target
-ConditionFileNotEmpty=/etc/consul.d/consul.hcl
+# https://github.com/OpenRC/openrc/blob/master/service-script-guide.md
 
-[Service]
-Type=notify
-User=consul
-Group=consul
-ExecStart=/usr/bin/consul agent -config-dir=/etc/consul.d/
-ExecReload=/bin/kill --signal HUP $MAINPID
-KillMode=process
-KillSignal=SIGTERM
-Restart=on-failure
-LimitNOFILE=65536
-
-[Install]
-WantedBy=multi-user.target
-EOF
+# Declare a hard dependency on network and
+# local filesystem access.
+depend() {
+  need net
+  need localmount
 }
 
-start_consul() {
+reload() {
+  ebegin "Reloading Consul"
+  start-stop-daemon --signal HUP --pidfile "${pidfile}"
+  eend $?
+}
+
+command=/usr/bin/consul
+command_args="agent -config-dir=/etc/consul.d/"
+extra_started_commands="reload"
+
+name="Consul Server"
+description="HashiCorp Consul - A service mesh solution"
+EOF
+  chmod +x /etc/init.d/consul.service
+}
+
+startConsul() {
   echo "Starting the Consul service"
-  # TODO alpine doesn't have systemd!
-  # systemctl enable consul
-  # systemctl start consul
-  # systemctl status consul
+  /etc/init.d/consul.service start
+  rc-update add consul.service default
+  rc-status
 }
 
 main() {
@@ -151,18 +158,19 @@ main() {
 
   setTimezone
   updatePackages
-  move_consul
-  adduser_consul
-  mkdir_consul_config
-  mkdir_consul_data
-  create_encryption_key
-  create_certificate_authority
-  create_tls_certificates
-  configure_consul
-  configure_server
-  validate_config
-  # configure_systemd
-  # start_consul
+  installOpenRCInit
+  moveConsul
+  adduserConsul
+  mkdirConsulConfig
+  mkdirConsulData
+  createEncryptionKey
+  createCertificateAuthority
+  createTlsCertificates
+  configureConsul
+  configureServer
+  validateConfig
+  configureInit
+  startConsul
 
   echo "Complete"
 }
