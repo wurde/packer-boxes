@@ -16,7 +16,8 @@ updatePackages() {
 
 installOpenRCInit() {
   echo "Installing OpenRC init system"
-  apk add openrc
+  apk add openrc --no-cache
+  sed -i 's/^#rc_default_runlevel="default"/rc_default_runlevel="default"/' /etc/rc.conf
 }
 
 moveConsul() {
@@ -152,7 +153,13 @@ EOF
 
 startConsul() {
   echo "Starting the Consul service"
-  # In Alpine, runlevels work like they do in Gentoo:
+  # Creating a new runlevel thus involves creating a
+  # new directory under /etc/runlevels. Then stacking:
+  #   mkdir /etc/runlevels/office
+  #   rc-update -s add default office
+  #   rc-update add myvpn office
+  #
+  # Defaults:
   #   /etc/runlevels/boot
   #   /etc/runlevels/default
   #   /etc/runlevels/nonetwork
