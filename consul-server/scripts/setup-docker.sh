@@ -158,9 +158,8 @@ startConsul() {
   #   /etc/runlevels/nonetwork
   #   /etc/runlevels/shutdown
   #   /etc/runlevels/sysinit
-  # rc-update add consul.service default
-  # rc-service consul.service describe
-  # rc-status
+  rc-update add consul.service default
+  rc-status
 }
 
 main() {
