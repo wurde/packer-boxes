@@ -159,6 +159,7 @@ startConsul() {
   #   /etc/runlevels/shutdown
   #   /etc/runlevels/sysinit
   rc-update add consul.service default
+  rc-update show -v
   rc-status
 }
 
