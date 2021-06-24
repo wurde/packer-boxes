@@ -19,19 +19,19 @@ installOpenRCInit() {
   apk add open-rc
 }
 
-move_consul() {
+moveConsul() {
   echo "Moving the Consul binary"
   chown root:root /tmp/consul
   mv /tmp/consul /usr/bin/consul
 }
 
-adduser_consul() {
+adduserConsul() {
   echo "Creating a non-privileged user to run Consul"
   addgroup -S consul
   adduser -S -h /etc/consul.d -s /bin/false -G consul consul
 }
 
-mkdir_consul_config() {
+mkdirConsulConfig() {
   echo "Creating Consul's configuration directory"
   mkdir --parents /etc/consul.d
   touch /etc/consul.d/consul.hcl
@@ -41,26 +41,26 @@ mkdir_consul_config() {
   chown --recursive consul:consul /etc/consul.d
 }
 
-mkdir_consul_data() {
+mkdirConsulData() {
   echo "Creating Consul's data directory"
   mkdir --parents /opt/consul
   chown --recursive consul:consul /opt/consul
 }
 
-create_encryption_key() {
+createEncryptionKey() {
   echo "Generating a new 32-byte encryption key"
   consul keygen | tee /etc/consul.d/key
   chown consul:consul /etc/consul.d/key
 }
 
-create_certificate_authority() {
+createCertificateAuthority() {
   echo "Creating a Consul Certificate Authority"
   cd /etc/consul.d
   consul tls ca create
   chown --recursive consul:consul /etc/consul.d
 }
 
-create_tls_certificates() {
+createTlsCertificates() {
   echo "Generating TLS certificates for RPC encryption"
   consul tls cert create -server -dc docker-dc1
   consul tls cert create -server -dc docker-dc1
@@ -68,7 +68,7 @@ create_tls_certificates() {
   chown --recursive consul:consul /etc/consul.d
 }
 
-configure_consul() {
+configureConsul() {
   echo "Configuring Consul"
 
   cat << EOF | tee /etc/consul.d/consul.hcl
@@ -95,7 +95,7 @@ EOF
   chown consul:consul /etc/consul.d/consul.hcl
 }
 
-configure_server() {
+configureServer() {
   echo "Configuring Consul server"
 
   cat << EOF | tee /etc/consul.d/server.hcl
@@ -111,7 +111,7 @@ EOF
   chown consul:consul /etc/consul.d/server.hcl
 }
 
-validate_config() {
+validateConfig() {
   echo "Validating the Consul configuration"
   consul validate /etc/consul.d/consul.hcl
 }
