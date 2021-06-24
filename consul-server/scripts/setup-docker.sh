@@ -16,7 +16,7 @@ updatePackages() {
 
 installOpenRCInit() {
   echo "Installing OpenRC init system"
-  apk add open-rc
+  apk add openrc
 }
 
 moveConsul() {
@@ -88,6 +88,8 @@ verify_server_hostname = true
 #  enable_token_persistence = true
 #}
 
+#advertise_addr = "{{ GetInterfaceIP \"eth0\" }}"
+
 performance {
   raft_multiplier = 5
 }
@@ -132,12 +134,14 @@ depend() {
 
 reload() {
   ebegin "Reloading Consul"
-  start-stop-daemon --signal HUP --pidfile "${pidfile}"
+  start-stop-daemon --signal HUP --pidfile "/run/consul.service.pid"
   eend $?
 }
 
 command=/usr/bin/consul
 command_args="agent -config-dir=/etc/consul.d/"
+command_background=true
+pidfile="/run/consul.service.pid"
 extra_started_commands="reload"
 
 name="Consul Server"
@@ -148,9 +152,15 @@ EOF
 
 startConsul() {
   echo "Starting the Consul service"
-  /etc/init.d/consul.service start
-  rc-update add consul.service default
-  rc-status
+  # In Alpine, runlevels work like they do in Gentoo:
+  #   /etc/runlevels/boot
+  #   /etc/runlevels/default
+  #   /etc/runlevels/nonetwork
+  #   /etc/runlevels/shutdown
+  #   /etc/runlevels/sysinit
+  # rc-update add consul.service default
+  # rc-service consul.service describe
+  # rc-status
 }
 
 main() {
