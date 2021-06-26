@@ -265,6 +265,16 @@ source "docker" "consul-server" {
     # that applications use to interact with Consul.
     "EXPOSE 8500 8600 8600/udp",
 
+    # Set environment variables.
+    #
+    # CONSUL_DATA_DIR is exposed as a volume for possible
+    # persistent storage. The CONSUL_CONFIG_DIR isn't
+    # exposed as a volume but you can compose additional
+    # config files in there if you use this image as a
+    # base, or use CONSUL_LOCAL_CONFIG below.
+    "ENV CONSUL_DATA_DIR /opt/consul",
+    "ENV CONSUL_CONFIG_DIR /etc/consul.d/",
+
     # Consul doesn't need root privileges so we run it as
     # the consul user from the entry point script. The entry
     # point script also uses dumb-init as the top-level

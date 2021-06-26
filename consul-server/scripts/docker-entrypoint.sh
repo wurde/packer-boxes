@@ -1,15 +1,19 @@
 #!/usr/bin/dumb-init /bin/sh
 set -e
+# Exit immediately if a command exits with a non-zero status.
 
-# Note above that we run dumb-init as PID 1 in order to reap zombie processes
-# as well as forward signals to all processes in its session. Normally, sh
-# wouldn't do either of these functions so we'd leak zombies as well as do
-# unclean termination of all our sub-processes.
-# As of docker 1.13, using docker run --init achieves the same outcome.
+# Note above that we run dumb-init as PID 1. This is reaps
+# zombie processes as well as forward signals to all
+# processes in its session. Normally, sh wouldn't do either
+# of these functions so we'd leak zombies as well as do
+# unclean termination of all our sub-processes. As of
+# docker 1.13, using docker run --init achieves the same
+# outcome.
 
-# You can set CONSUL_BIND_INTERFACE to the name of the interface you'd like to
-# bind to and this will look up the IP and pass the proper -bind= option along
-# to Consul.
+# TODO review
+# You can set CONSUL_BIND_INTERFACE to the name of the
+# interface you'd like to bind to and this will look up
+# the IP and pass the proper -bind= option along to Consul.
 CONSUL_BIND=
 if [ -n "$CONSUL_BIND_INTERFACE" ]; then
   CONSUL_BIND_ADDRESS=$(ip -o -4 addr list $CONSUL_BIND_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)
@@ -22,9 +26,11 @@ if [ -n "$CONSUL_BIND_INTERFACE" ]; then
   echo "==> Found address '$CONSUL_BIND_ADDRESS' for interface '$CONSUL_BIND_INTERFACE', setting bind option..."
 fi
 
-# You can set CONSUL_CLIENT_INTERFACE to the name of the interface you'd like to
-# bind client intefaces (HTTP, DNS, and RPC) to and this will look up the IP and
-# pass the proper -client= option along to Consul.
+# TODO review
+# You can set CONSUL_CLIENT_INTERFACE to the name of
+# the interface you'd like to bind client intefaces
+# (HTTP, DNS, and RPC) to and this will look up the IP
+# and pass the proper -client= option along to Consul.
 CONSUL_CLIENT=
 if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
   CONSUL_CLIENT_ADDRESS=$(ip -o -4 addr list $CONSUL_CLIENT_INTERFACE | head -n1 | awk '{print $4}' | cut -d/ -f1)
@@ -37,25 +43,14 @@ if [ -n "$CONSUL_CLIENT_INTERFACE" ]; then
   echo "==> Found address '$CONSUL_CLIENT_ADDRESS' for interface '$CONSUL_CLIENT_INTERFACE', setting client option..."
 fi
 
-# CONSUL_DATA_DIR is exposed as a volume for possible persistent storage. The
-# CONSUL_CONFIG_DIR isn't exposed as a volume but you can compose additional
-# config files in there if you use this image as a base, or use CONSUL_LOCAL_CONFIG
-# below.
-CONSUL_DATA_DIR=/consul/data
-CONSUL_CONFIG_DIR=/consul/config
-
-# You can also set the CONSUL_LOCAL_CONFIG environemnt variable to pass some
-# Consul configuration JSON without having to bind any volumes.
-if [ -n "$CONSUL_LOCAL_CONFIG" ]; then
-	echo "$CONSUL_LOCAL_CONFIG" > "$CONSUL_CONFIG_DIR/local.json"
-fi
-
+# TODO review
 # If the user is trying to run Consul directly with some arguments, then
 # pass them to Consul.
 if [ "${1:0:1}" = '-' ]; then
     set -- consul "$@"
 fi
 
+# TODO review
 # Look for Consul subcommands.
 if [ "$1" = 'agent' ]; then
     shift
@@ -74,6 +69,7 @@ elif consul --help "$1" 2>&1 | grep -q "consul $1"; then
     set -- consul "$@"
 fi
 
+# TODO review
 # If we are running Consul, make sure it executes as the proper user.
 if [ "$1" = 'consul' -a -z "${CONSUL_DISABLE_PERM_MGMT+x}" ]; then
     # If the data or config dirs are bind mounted then chown them.
