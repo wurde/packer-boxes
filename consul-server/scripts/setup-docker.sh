@@ -14,13 +14,6 @@ updatePackages() {
   apk -U upgrade
 }
 
-installOpenRCInit() {
-  echo "Installing OpenRC init system"
-  apk add openrc --no-cache
-  sed -i 's/^#rc_default_runlevel="default"/rc_default_runlevel="default"/' /etc/rc.conf
-  sed -i 's|::wait:/sbin/openrc default|::initdefault:/sbin/openrc default|' /etc/inittab
-}
-
 # dumb-init is a simple process supervisor that
 # forwards signals to children. It is designed
 # to run as PID1 in minimal container environments.
@@ -142,8 +135,8 @@ validateConfig() {
   consul validate /etc/consul.d/consul.hcl
 }
 
-moveConsulEntrypoint() {
-  echo "Moving the Consul binary"
+moveDockerEntrypoint() {
+  echo "Moving the Docker image entrypoint"
   chown root:root /tmp/docker-entrypoint.sh
   mv /tmp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 }
@@ -153,7 +146,6 @@ main() {
 
   setTimezone
   updatePackages
-  installOpenRCInit
   installDumbInit
   installSuExec
   setupNameServiceSwitch
@@ -167,7 +159,7 @@ main() {
   configureConsul
   configureServer
   validateConfig
-  moveConsulEntrypoint
+  moveDockerEntrypoint
 
   echo "Complete"
 }
