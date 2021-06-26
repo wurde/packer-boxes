@@ -58,6 +58,14 @@ use with Google Compute Engine (GCE).
 The `docker` Packer builder is able to create images for
 use with Docker.
 
+```bash
+# Run your image as a container
+docker run -it [image-id]
+
+# Enter a running Docker container with a new TTY
+docker exec -it [container-id] bash
+```
+
 ## License
 
 This project is __FREE__ to use, reuse, remix, and resell.
