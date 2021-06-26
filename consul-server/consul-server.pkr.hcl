@@ -270,10 +270,10 @@ source "docker" "consul-server" {
     # point script also uses dumb-init as the top-level
     # process to reap any zombie processes created by Consul
     # sub-processes.
-    "ENTRYPOINT ['docker-entrypoint.sh']",
+    "ENTRYPOINT [\"docker-entrypoint.sh\"]",
 
     # Provide default arguments to ENTRYPOINT.
-    "CMD ['agent', '-config-dir=/etc/consul.d/']"
+    "CMD [\"agent\", \"-config-dir=/etc/consul.d/\"]"
   ]
 }
 
