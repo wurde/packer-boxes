@@ -18,6 +18,14 @@ installOpenRCInit() {
   echo "Installing OpenRC init system"
   apk add openrc --no-cache
   sed -i 's/^#rc_default_runlevel="default"/rc_default_runlevel="default"/' /etc/rc.conf
+  sed -i 's|::wait:/sbin/openrc default|::initdefault:/sbin/openrc default|' /etc/inittab
+}
+
+# Set up nsswitch.conf for Go's "netgo" implementation
+# which is used by Consul, otherwise DNS supercedes the
+# container's hosts file, which we don't want.
+setupNameServiceSwitch() {
+  test -e /etc/nsswitch.conf || echo 'hosts: files dns' > /etc/nsswitch.conf
 }
 
 moveConsul() {
@@ -119,6 +127,12 @@ validateConfig() {
   consul validate /etc/consul.d/consul.hcl
 }
 
+moveConsulEntrypoint() {
+  echo "Moving the Consul binary"
+  chown root:root /tmp/docker-entrypoint.sh
+  mv /tmp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+}
+
 configureInit() {
   echo "Configuring the Consul process"
   cat << EOF | tee /etc/init.d/consul.service
@@ -168,6 +182,10 @@ startConsul() {
   rc-update add consul.service default
   rc-update show -v
   rc-status
+
+  # BUG boot runlevel should be 'default' not 'sysinit'
+  # Review /etc/inittab configuration.
+  # https://www.ibm.com/docs/en/aix/7.1?topic=files-inittab-file
 }
 
 main() {
@@ -176,6 +194,7 @@ main() {
   setTimezone
   updatePackages
   installOpenRCInit
+  setupNameServiceSwitch
   moveConsul
   adduserConsul
   mkdirConsulConfig
@@ -186,8 +205,9 @@ main() {
   configureConsul
   configureServer
   validateConfig
-  configureInit
-  startConsul
+  moveConsulEntrypoint
+  # configureInit
+  # startConsul
 
   echo "Complete"
 }

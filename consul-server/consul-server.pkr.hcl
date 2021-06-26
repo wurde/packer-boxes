@@ -242,6 +242,36 @@ source "docker" "consul-server" {
 
   # Set a message for the commit.
   message = "Build consul-server-${local.version}-docker-${local.timestamp}."
+
+  changes = [
+    # Set  metadata to an image. A LABEL is a key-value pair. To include spaces within a LABEL value, use quotes and backslashes as you would in command-line parsing. A few usage examples:
+    "LABEL version=${var.consul_version}",
+
+    # Expose the data directory as a volume since there's
+    # mutable state in there.
+    "VOLUME /opt/consul",
+
+    # Server RPC is used for communication between Consul
+    # clients and servers for internal request forwarding.
+    "EXPOSE 8300",
+
+    # Serf LAN and WAN (WAN is used only by Consul servers)
+    # are used for gossip between Consul agents. LAN is
+    # within the datacenter and WAN is between just the
+    # Consul servers in all datacenters.
+    "EXPOSE 8301 8301/udp 8302 8302/udp",
+
+    # HTTP and DNS (TCP and UDP) are the primary interfaces
+    # that applications use to interact with Consul.
+    "EXPOSE 8500 8600 8600/udp",
+
+    # Consul doesn't need root privileges so we run it as
+    # the consul user from the entry point script. The entry
+    # point script also uses dumb-init as the top-level
+    # process to reap any zombie processes created by Consul
+    # sub-processes.
+    "ENTRYPOINT ['docker-entrypoint.sh']"
+  ]
 }
 
 # The build block defines what builders are
