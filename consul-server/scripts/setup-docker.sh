@@ -21,6 +21,21 @@ installOpenRCInit() {
   sed -i 's|::wait:/sbin/openrc default|::initdefault:/sbin/openrc default|' /etc/inittab
 }
 
+# dumb-init is a simple process supervisor that
+# forwards signals to children. It is designed
+# to run as PID1 in minimal container environments.
+installDumbInit() {
+  echo "Installing dumb-init"
+  apk add --no-cache dumb-init
+}
+
+# su-exec allows you to switch user and group id
+# before executing a command
+installSuExec() {
+  echo "Installing su-exec"
+  apk add --no-cache su-exec
+}
+
 # Set up nsswitch.conf for Go's "netgo" implementation
 # which is used by Consul, otherwise DNS supercedes the
 # container's hosts file, which we don't want.
@@ -133,67 +148,14 @@ moveConsulEntrypoint() {
   mv /tmp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 }
 
-configureInit() {
-  echo "Configuring the Consul process"
-  cat << EOF | tee /etc/init.d/consul.service
-#!/sbin/openrc-run
-
-# https://github.com/OpenRC/openrc/blob/master/service-script-guide.md
-
-# Declare a hard dependency on network and
-# local filesystem access.
-depend() {
-  need net
-  need localmount
-}
-
-reload() {
-  ebegin "Reloading Consul"
-  start-stop-daemon --signal HUP --pidfile "/run/consul.service.pid"
-  eend $?
-}
-
-command=/usr/bin/consul
-command_args="agent -config-dir=/etc/consul.d/"
-command_background=true
-pidfile="/run/consul.service.pid"
-extra_started_commands="reload"
-
-name="Consul Server"
-description="HashiCorp Consul - A service mesh solution"
-EOF
-  chmod +x /etc/init.d/consul.service
-}
-
-startConsul() {
-  echo "Starting the Consul service"
-  # Creating a new runlevel thus involves creating a
-  # new directory under /etc/runlevels. Then stacking:
-  #   mkdir /etc/runlevels/office
-  #   rc-update -s add default office
-  #   rc-update add myvpn office
-  #
-  # Defaults:
-  #   /etc/runlevels/boot
-  #   /etc/runlevels/default
-  #   /etc/runlevels/nonetwork
-  #   /etc/runlevels/shutdown
-  #   /etc/runlevels/sysinit
-  rc-update add consul.service default
-  rc-update show -v
-  rc-status
-
-  # BUG boot runlevel should be 'default' not 'sysinit'
-  # Review /etc/inittab configuration.
-  # https://www.ibm.com/docs/en/aix/7.1?topic=files-inittab-file
-}
-
 main() {
   echo "Running"
 
   setTimezone
   updatePackages
   installOpenRCInit
+  installDumbInit
+  installSuExec
   setupNameServiceSwitch
   moveConsul
   adduserConsul
@@ -206,8 +168,6 @@ main() {
   configureServer
   validateConfig
   moveConsulEntrypoint
-  # configureInit
-  # startConsul
 
   echo "Complete"
 }
