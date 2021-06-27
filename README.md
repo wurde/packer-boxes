@@ -31,11 +31,6 @@ BUILDS = amazon-ebs.consul-server, docker.consul-server
 
 # Configure which Consul version to install. Default: v1.10
 CONSUL_VERSION = v1.10
-
-# REQUIRED for googlecompute builds.
-# If using googlecompute then you must specify
-# a Google Cloud Project ID.
-PKR_VAR_googlecompute_project_id = "<unique_project_name>"
 ```
 
 ## Builders
@@ -49,6 +44,13 @@ use with Amazon Elastic Compute Cloud (EC2).
 
 The `googlecompute` Packer builder is able to create images for
 use with Google Compute Engine (GCE).
+
+**./.env**
+
+```bash
+# REQUIRED. You must specif a Google Cloud Project ID.
+PKR_VAR_googlecompute_project_id = "<unique_project_name>"
+```
 
 ### Docker
 
