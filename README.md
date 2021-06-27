@@ -7,24 +7,16 @@ multi-cloud HashiStack.
 
 - Linux x86-64 (operating system, architecture)
 
+_Note I'm open to contributors who'd like to extend OS support. It's just not a concern/focus of mine._
+
 ## Usage
 
 ```bash
-# Initiate all builds
 make build
 ```
 
-Required configuration:
-
-**./main.pkvars.hcl**
-
-```bash
-# If using googlecompute then you must specify
-# a Google Cloud Project ID.
-googlecompute_project_id = "<unique_project_name>"
-```
-
-Optional configuration:
+All configuration happens via environment variables.
+By default a local `.env` file will be imported.
 
 **./.env**
 
@@ -39,6 +31,11 @@ BUILDS = amazon-ebs.consul-server, docker.consul-server
 
 # Configure which Consul version to install. Default: v1.10
 CONSUL_VERSION = v1.10
+
+# REQUIRED for googlecompute builds.
+# If using googlecompute then you must specify
+# a Google Cloud Project ID.
+PKR_VAR_googlecompute_project_id = "<unique_project_name>"
 ```
 
 ## Builders
