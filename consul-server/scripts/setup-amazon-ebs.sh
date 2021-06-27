@@ -12,19 +12,18 @@ updatePackages() {
   sudo yum update -y
 }
 
-
-move_consul() {
+moveConsul() {
   echo "Moving the Consul binary"
   sudo chown root:root /tmp/consul
   sudo mv /tmp/consul /usr/bin/consul
 }
 
-adduser_consul() {
+adduserConsul() {
   echo "Creating a non-privileged user to run Consul"
-  sudo useradd --system --home /etc/consul.d --shell /bin/false consul
+  sudo useradd --system --user-group  --home /etc/consul.d --shell /bin/false consul
 }
 
-mkdir_consul_config() {
+mkdirConsulConfig() {
   echo "Creating Consul's configuration directory"
   sudo mkdir --parents /etc/consul.d
   sudo touch /etc/consul.d/consul.hcl
@@ -34,26 +33,26 @@ mkdir_consul_config() {
   sudo chown --recursive consul:consul /etc/consul.d
 }
 
-mkdir_consul_data() {
+mkdirConsulData() {
   echo "Creating Consul's data directory"
   sudo mkdir --parents /opt/consul
   sudo chown --recursive consul:consul /opt/consul
 }
 
-create_encryption_key() {
+createEncryptionKey() {
   echo "Generating a new 32-byte encryption key"
   consul keygen | sudo tee /etc/consul.d/key
   sudo chown consul:consul /etc/consul.d/key
 }
 
-create_certificate_authority() {
+createCertificateAuthority() {
   echo "Creating a Consul Certificate Authority"
   cd /etc/consul.d
   sudo consul tls ca create
   sudo chown --recursive consul:consul /etc/consul.d
 }
 
-create_tls_certificates() {
+createTlsCertificates() {
   echo "Generating TLS certificates for RPC encryption"
   sudo consul tls cert create -server -dc aws-us-east-2
   sudo consul tls cert create -server -dc aws-us-east-2
@@ -61,8 +60,8 @@ create_tls_certificates() {
   sudo chown --recursive consul:consul /etc/consul.d
 }
 
-configure_consul() {
-  echo "Configuring Consul"
+configureConsul() {
+  echo "ConfSuring Consul"
 
   cat << EOF | sudo tee /etc/consul.d/consul.hcl
 node = consul-node-one
@@ -90,7 +89,7 @@ EOF
   sudo chown consul:consul /etc/consul.d/consul.hcl
 }
 
-configure_server() {
+configureServer() {
   echo "Configuring Consul server"
 
   cat << EOF | sudo tee /etc/consul.d/server.hcl
@@ -106,7 +105,7 @@ EOF
   sudo chown consul:consul /etc/consul.d/server.hcl
 }
 
-configure_systemd() {
+configureSystemd() {
   echo "Configuring the Consul process"
 
   cat << EOF | sudo tee /usr/lib/systemd/system/consul.service
@@ -133,12 +132,12 @@ WantedBy=multi-user.target
 EOF
 }
 
-validate_config() {
+validateConfig() {
   echo "Validating the Consul configuration"
   sudo consul validate /etc/consul.d/consul.hcl
 }
 
-start_consul() {
+startConsul() {
   echo "Starting the Consul service"
   sudo systemctl daemon-reload
   sudo systemctl enable consul
@@ -151,18 +150,18 @@ main() {
 
   setTimezone
   updatePackages
-  # move_consul
-  # adduser_consul
-  # mkdir_consul_config
-  # mkdir_consul_data
-  # create_encryption_key
-  # create_certificate_authority
-  # create_tls_certificates
-  # configure_consul
-  # configure_server
-  # configure_systemd
-  # validate_config
-  # start_consul
+  moveConsul
+  adduserConsul
+  mkdirConsulConfig
+  mkdirConsulData
+  createEncryptionKey
+  createCertificateAuthority
+  createTlsCertificates
+  configureConsul
+  configureServer
+  configureSystemd
+  validateConfig
+  startConsul
 
   echo "Complete"
 }

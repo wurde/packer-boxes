@@ -26,18 +26,15 @@ locals {
 
   # The AWS Region used for the EC2 instance.
   aws_region = "us-east-2"
+  # The EC2 instance type.
+  ec2_instance_type = "t3a.nano"
 
   # The GCP Zone used to launch the instance.
   gcp_zone = "us-central1-a"
-
   # The GCP Source Image
   gcp_source_image_family = "ubuntu-minimal-2104"
-
   # The GCP machine type.
   gcp_machine_type = "n1-standard-1"
-
-  # The EC2 instance type.
-  ec2_instance_type = "t3a.nano"
 
   # The Docker image.
   docker_image = "amd64/alpine:3.13"
