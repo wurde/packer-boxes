@@ -1,6 +1,8 @@
-BUILDS = amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-server, amazon-ebs.nomad-client,  googlecompute.nomad-client, docker.nomad-client, amazon-ebs.nomad-server, googlecompute.nomad-server, docker.nomad-server, amazon-ebs.vault-server, googlecompute.vault-server, docker.vault-server
+BUILDS = amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-server, amazon-ebs.nomad-client,  googlecompute.nomad-client, docker.nomad-client, amazon-ebs.nomad-server, googlecompute.nomad-server, docker.nomad-server, amazon-ebs.vault-server, googlecompute.vault-server, docker.vault-server, amazon-ebs.consul-vault-nomad-server, googlecompute.consul-vault-nomad-server, docker.consul-vault-nomad-server, null.example
 
-export CONSUL_VERSION = v1.10
+export PKR_VAR_consul_version = "v1.10"
+export PKR_VAR_vault_version = "v1.7"
+export PKR_VAR_nomad_version = "v1.1"
 
 # Source environment variables
 -include .env
@@ -32,16 +34,20 @@ packer-init:
 build: dependencies packer-init ## Build machine images.
 	@echo "Building machine images"
 ifneq (,$(findstring consul-server, $(BUILDS)))
-	@packer build -timestamp-ui -only=$(BUILDS) -var-file=main.pkrvars.hcl ./consul-server/consul-server.pkr.hcl
+	@packer build -timestamp-ui -only=$(BUILDS) ./consul-server/consul-server.pkr.hcl
 endif
 ifneq (,$(findstring nomad-client, $(BUILDS)))
-	@packer build -timestamp-ui -only=$(BUILDS) -var-file=main.pkrvars.hcl ./nomad-client/nomad-client.pkr.hcl
+	@packer build -timestamp-ui -only=$(BUILDS) ./nomad-client/nomad-client.pkr.hcl
 endif
 ifneq (,$(findstring nomad-server, $(BUILDS)))
-	@packer build -timestamp-ui -only=$(BUILDS) -var-file=main.pkrvars.hcl ./nomad-server/nomad-server.pkr.hcl
+	@packer build -timestamp-ui -only=$(BUILDS) ./nomad-server/nomad-server.pkr.hcl
 endif
 ifneq (,$(findstring vault-server, $(BUILDS)))
-	@packer build -timestamp-ui -only=$(BUILDS) -var-file=main.pkrvars.hcl ./vault-server/vault-server.pkr.hcl
+	@packer build -timestamp-ui -only=$(BUILDS) ./vault-server/vault-server.pkr.hcl
+endif
+# ifneq (,$(findstring consul-vault-nomad-server, $(BUILDS)))
+ifneq (,$(findstring example, $(BUILDS)))
+	@packer build -timestamp-ui -only=$(BUILDS) ./consul-vault-nomad-server/consul-vault-nomad-server.pkr.hcl
 endif
 
 HELP_FORMAT="    \033[36m%-25s\033[0m %s\n"

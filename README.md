@@ -29,8 +29,12 @@ By default a local `.env` file will be imported.
 #   amazon-ebs.vault-server,  googlecompute.vault-server,  docker.vault-server
 BUILDS = amazon-ebs.consul-server, docker.consul-server
 
-# Configure which Consul version to install. Default: v1.10
-CONSUL_VERSION = v1.10
+# Configure which Consul version to install.
+PKR_VAR_consul_version = v1.10
+# Configure which Vault version to install.
+PKR_VAR_vault_version = v1.7
+# Configure which Nomad version to install.
+PKR_VAR_nomad_version = v1.1
 ```
 
 ## Builders

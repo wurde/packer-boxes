@@ -1,11 +1,9 @@
 # Builders are responsible for creating machines and
 # generating images from them for various platforms.
 
-# https://github.com/hashicorp/consul
-# export PKR_VAR_consul_version=$CONSUL_VERSION
 variable "consul_version" {
-  type    = string
-  default = "1.9.5"
+  type        = string
+  description = "Consul version to install. See latest releases here: https://github.com/hashicorp/consul/releases"
 }
 
 variable "googlecompute_project_id" {
