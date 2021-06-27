@@ -41,8 +41,7 @@ mkdirConsulData() {
 
 createEncryptionKey() {
   echo "Generating a new 32-byte encryption key"
-  consul keygen | sudo tee /etc/consul.d/key
-  sudo chown consul:consul /etc/consul.d/key
+  encryption_key=$(consul keygen)
 }
 
 createCertificateAuthority() {
@@ -64,10 +63,10 @@ configureConsul() {
   echo "ConfSuring Consul"
 
   cat << EOF | sudo tee /etc/consul.d/consul.hcl
-node = consul-node-one
+node_name = "consul-server-node-one"
 datacenter = "aws-us-east-2"
 data_dir = "/opt/consul"
-encrypt = "qDOPBEr+/oUVeOFQOnVypxwDaHzLrD+lvjo5vCEBbZ0="
+encrypt = "${encryption_key}"
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
 cert_file = "/etc/consul.d/aws-us-east-2-server-consul-0.pem"
 key_file = "/etc/consul.d/aws-us-east-2-server-consul-0-key.pem"

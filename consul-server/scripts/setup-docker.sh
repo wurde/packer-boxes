@@ -66,8 +66,7 @@ mkdirConsulData() {
 
 createEncryptionKey() {
   echo "Generating a new 32-byte encryption key"
-  consul keygen | tee /etc/consul.d/key
-  chown consul:consul /etc/consul.d/key
+  encryption_key=$(consul keygen)
 }
 
 createCertificateAuthority() {
@@ -91,7 +90,7 @@ configureConsul() {
   cat << EOF | tee /etc/consul.d/consul.hcl
 datacenter = "docker-dc1"
 data_dir = "/opt/consul"
-encrypt = "qDOPBEr+/oUVeOFQOnVypxwDaHzLrD+lvjo5vCEBbZ0="
+encrypt = "${encryption_key}"
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
 cert_file = "/etc/consul.d/docker-dc1-server-consul-0.pem"
 key_file = "/etc/consul.d/docker-dc1-server-consul-0-key.pem"
