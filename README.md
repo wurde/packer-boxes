@@ -1,7 +1,7 @@
 # Andy Bettisworth's Packer Builds
 
 A set of Packer templates to simplify deploying a
-multi-cloud HashiStack.
+multi-cloud [HashiStack](https://hashicorp.com).
 
 ## Requirements
 
