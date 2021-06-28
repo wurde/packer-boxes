@@ -81,9 +81,6 @@ variable "client_addr" {
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
 locals {
-  # The version of the Consul Server image.
-  version = "v1"
-
   # The timestamp when the build ran.
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 
@@ -125,7 +122,7 @@ locals {
 # https://www.packer.io/docs/builders/amazon/ebs
 source "amazon-ebs" "consul-server" {
   # Name of the AMI. Required. Must be unique.
-  ami_name        = "consul-server-${local.version}-amazon-ebs-${local.timestamp}"
+  ami_name        = "consul-server-amazon-ebs-${local.timestamp}"
   ami_description = "An Amazon Linux 2 AMI for deploying a Consul server."
 
   # The type of virtualization for the AMI you are building.
