@@ -53,36 +53,30 @@ createCertificateAuthority() {
 
 createTlsCertificates() {
   echo "Generating TLS certificates for RPC encryption"
-  sudo consul tls cert create -server -dc aws-us-east-2
-  sudo consul tls cert create -server -dc aws-us-east-2
-  sudo consul tls cert create -server -dc aws-us-east-2
+  sudo consul tls cert create -server -dc $AWS_DATACENTER
+  sudo consul tls cert create -server -dc $AWS_DATACENTER
+  sudo consul tls cert create -server -dc $AWS_DATACENTER
   sudo chown --recursive consul:consul /etc/consul.d
 }
 
 configureConsul() {
-  echo "ConfSuring Consul"
+  echo "Configuring Consul"
 
   cat << EOF | sudo tee /etc/consul.d/consul.hcl
 node_name = "consul-server-node-one"
-datacenter = "aws-us-east-2"
+datacenter = "${AWS_DATACENTER}"
 data_dir = "/opt/consul"
 encrypt = "${encryption_key}"
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
-cert_file = "/etc/consul.d/aws-us-east-2-server-consul-0.pem"
-key_file = "/etc/consul.d/aws-us-east-2-server-consul-0-key.pem"
+cert_file = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0.pem"
+key_file = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0-key.pem"
 verify_incoming = true
 verify_outgoing = true
 verify_server_hostname = true
-retry_join = ["provider=aws tag_key=Consul-Auto-Join tag_value=main region=us-east-2"]
-
-#acl = {
-#  enabled = true
-#  default_policy = "allow"
-#  enable_token_persistence = true
-#}
+retry_join = ["provider=aws tag_key=Consul-Auto-Join tag_value=main region=${AWS_REGION}"]
 
 performance {
-  raft_multiplier = 5
+  raft_multiplier = ${RAFT_MULTIPLIER}
 }
 EOF
   sudo chown consul:consul /etc/consul.d/consul.hcl
@@ -93,13 +87,8 @@ configureServer() {
 
   cat << EOF | sudo tee /etc/consul.d/server.hcl
 server = true
-client_addr = "0.0.0.0"
-#bootstrap_expect = 1
-
-#ui_config {
-#  enabled = true
-#  metrics_provider = "prometheus"
-#}
+client_addr = "${CLIENT_ADDR}"
+bootstrap_expect = ${BOOTSTRAP_EXPECT}
 EOF
   sudo chown consul:consul /etc/consul.d/server.hcl
 }

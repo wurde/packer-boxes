@@ -4,8 +4,25 @@ export PKR_VAR_consul_version = "v1.10"
 export PKR_VAR_vault_version = "v1.7"
 export PKR_VAR_nomad_version = "v1.1"
 
+export PKR_VAR_disk_size = 10
+
+export PKR_VAR_aws_region = us-east-2
+export PKR_VAR_ec2_instance_type = t3a.nano
+
+export PKR_VAR_gcp_zone = us-central1-a
+export PKR_VAR_gcp_machine_type = n1-standard-1
+export PKR_VAR_gcp_source_image_family = ubuntu-minimal-2104
+
+export PKR_VAR_docker_image = amd64/alpine:3.13
+
+export PKR_VAR_aws_datacenter = aws-dc1
+export PKR_VAR_gcp_datacenter = gcp-dc1
+export PKR_VAR_docker_datacenter = docker-dc1
+
 # Consul variables
 export PKR_VAR_raft_multiplier = 5
+export PKR_VAR_bootstrap_expect = 1
+export PKR_VAR_client_addr = 0.0.0.0
 
 # Source environment variables
 -include .env

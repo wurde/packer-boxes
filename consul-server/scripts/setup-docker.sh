@@ -78,9 +78,9 @@ createCertificateAuthority() {
 
 createTlsCertificates() {
   echo "Generating TLS certificates for RPC encryption"
-  consul tls cert create -server -dc docker-dc1
-  consul tls cert create -server -dc docker-dc1
-  consul tls cert create -server -dc docker-dc1
+  consul tls cert create -server -dc $DOCKER_DATACENTER
+  consul tls cert create -server -dc $DOCKER_DATACENTER
+  consul tls cert create -server -dc $DOCKER_DATACENTER
   chown --recursive consul:consul /etc/consul.d
 }
 
@@ -88,26 +88,18 @@ configureConsul() {
   echo "Configuring Consul"
 
   cat << EOF | tee /etc/consul.d/consul.hcl
-datacenter = "docker-dc1"
+datacenter = "${DOCKER_DATACENTER}"
 data_dir = "/opt/consul"
 encrypt = "${encryption_key}"
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
-cert_file = "/etc/consul.d/docker-dc1-server-consul-0.pem"
-key_file = "/etc/consul.d/docker-dc1-server-consul-0-key.pem"
+cert_file = "/etc/consul.d/${DOCKER_DATACENTER}-server-consul-0.pem"
+key_file = "/etc/consul.d/${DOCKER_DATACENTER}-server-consul-0-key.pem"
 verify_incoming = true
 verify_outgoing = true
 verify_server_hostname = true
 
-#acl = {
-#  enabled = true
-#  default_policy = "allow"
-#  enable_token_persistence = true
-#}
-
-#advertise_addr = "{{ GetInterfaceIP \"eth0\" }}"
-
 performance {
-  raft_multiplier = 5
+  raft_multiplier = ${RAFT_MULTIPLIER}
 }
 EOF
   chown consul:consul /etc/consul.d/consul.hcl
@@ -118,13 +110,8 @@ configureServer() {
 
   cat << EOF | tee /etc/consul.d/server.hcl
 server = true
-client_addr = "0.0.0.0"
-bootstrap_expect = 1
-
-#ui_config {
-#  enabled = true
-#  metrics_provider = "prometheus"
-#}
+client_addr = "${CLIENT_ADDR}"
+bootstrap_expect = ${BOOTSTRAP_EXPECT}
 EOF
   chown consul:consul /etc/consul.d/server.hcl
 }

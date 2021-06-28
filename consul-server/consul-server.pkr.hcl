@@ -6,10 +6,75 @@ variable "consul_version" {
   type        = string
 }
 
+variable "aws_region" {
+  description = "The AWS Region used for the EC2 instance."
+  type        = string
+}
+
+variable "ec2_instance_type" {
+  description = "The EC2 instance type."
+  type        = string
+}
+
 variable "googlecompute_project_id" {
   description = "The Google Cloud project ID used to launch instances and store images."
   type        = string
   default     = ""
+}
+
+variable "gcp_zone" {
+  description = "The GCP Zone used to launch the instance."
+  type        = string
+}
+
+variable "gcp_machine_type" {
+  description = "The GCP machine type."
+  type        = string
+}
+
+variable "gcp_source_image_family" {
+  description = "The GCP Source Image."
+  type        = string
+}
+
+variable "docker_image" {
+  description = "The Docker image."
+  type        = string
+}
+
+variable "disk_size" {
+  description = "The size of the disk in GB."
+  type        = number
+}
+
+variable "aws_datacenter" {
+  description = "The AWS datacenter in which the agent is running."
+  type        = string
+}
+
+variable "gcp_datacenter" {
+  description = "The GCP datacenter in which the agent is running."
+  type        = string
+}
+
+variable "docker_datacenter" {
+  description = "The Docker datacenter in which the agent is running."
+  type        = string
+}
+
+variable "raft_multiplier" {
+  description = "An integer multiplier used by Consul servers to scale key Raft timing parameters."
+  type        = number
+}
+
+variable "bootstrap_expect" {
+  description = "The number of expected servers in the datacenter."
+  type        = number
+}
+
+variable "client_addr" {
+  description = "The address to which Consul will bind client interfaces, including the HTTP and DNS servers."
+  type        = string
 }
 
 # The locals block, also called the local-variable
@@ -19,29 +84,17 @@ locals {
   # The version of the Consul Server image.
   version = "v1"
 
-  # The size of the disk in GB.
-  disk_size = 10
-
-  # The AWS Region used for the EC2 instance.
-  aws_region = "us-east-2"
-  # The EC2 instance type.
-  ec2_instance_type = "t3a.nano"
-
-  # The GCP Zone used to launch the instance.
-  gcp_zone = "us-central1-a"
-  # The GCP Source Image
-  gcp_source_image_family = "ubuntu-minimal-2104"
-  # The GCP machine type.
-  gcp_machine_type = "n1-standard-1"
-
-  # The Docker image.
-  docker_image = "amd64/alpine:3.13"
-
   # The timestamp when the build ran.
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 
   environment_vars = [
-    "RAFT_MULTIPLIER=${var.raft_multiplier}"
+    "AWS_REGION=${var.aws_region}",
+    "AWS_DATACENTER=${var.aws_datacenter}",
+    "GCP_DATACENTER=${var.gcp_datacenter}",
+    "DOCKER_DATACENTER=${var.docker_datacenter}",
+    "RAFT_MULTIPLIER=${var.raft_multiplier}",
+    "BOOTSTRAP_EXPECT=${var.bootstrap_expect}",
+    "CLIENT_ADDR=${var.client_addr}",
   ]
 }
 
@@ -84,8 +137,8 @@ source "amazon-ebs" "consul-server" {
   profile = "default"
 
   # The EC2 instance type. Required.
-  instance_type = local.ec2_instance_type
-  region        = local.aws_region
+  instance_type = var.ec2_instance_type
+  region        = var.aws_region
 
   # Default Linux system user account.
   ssh_username = "ec2-user"
@@ -154,7 +207,7 @@ source "amazon-ebs" "consul-server" {
 
     # The size in GiB. gp2 = $0.10 per GB-month.
     # https://aws.amazon.com/ebs/pricing
-    volume_size = local.disk_size
+    volume_size = var.disk_size
 
     # Amazon EBS provides the following volume types:
     # - General Purpose SSD (gp2 and gp3)
@@ -190,19 +243,19 @@ source "googlecompute" "consul-server" {
 
   # The source image to use to create the new image from.
   # gcloud compute images list
-  source_image_family = local.gcp_source_image_family
+  source_image_family = var.gcp_source_image_family
 
   # The zone in which to launch the instance used to create the image.
-  zone = local.gcp_zone
+  zone = var.gcp_zone
 
   # The GCP machine type.
-  machine_type = local.gcp_machine_type
+  machine_type = var.gcp_machine_type
 
   # The username to connect to SSH with.
   ssh_username = "ubuntu"
 
   # The size of the disk in GB. Defaults to 10GB (min 10GB).
-  disk_size = local.disk_size
+  disk_size = var.disk_size
 
   # Type of disk used to back your instance, like pd-ssd,
   # pd-balanced, or pd-standard. Defaults to pd-standard.
@@ -234,7 +287,7 @@ source "docker" "consul-server" {
   # The base image for the Docker container that will be started.
   # This image will be pulled from the Docker registry if it
   # doesn't already exist.
-  image = local.docker_image
+  image = var.docker_image
 
   # The container will be committed to an image rather than exported.
   commit = true
