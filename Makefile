@@ -1,8 +1,11 @@
-BUILDS = amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-server, amazon-ebs.nomad-client,  googlecompute.nomad-client, docker.nomad-client, amazon-ebs.nomad-server, googlecompute.nomad-server, docker.nomad-server, amazon-ebs.vault-server, googlecompute.vault-server, docker.vault-server, amazon-ebs.consul-vault-nomad-server, googlecompute.consul-vault-nomad-server, docker.consul-vault-nomad-server, null.example
+BUILDS = amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-server, amazon-ebs.nomad-client,  googlecompute.nomad-client, docker.nomad-client, amazon-ebs.nomad-server, googlecompute.nomad-server, docker.nomad-server, amazon-ebs.vault-server, googlecompute.vault-server, docker.vault-server, amazon-ebs.consul-vault-nomad-server, googlecompute.consul-vault-nomad-server, docker.consul-vault-nomad-server
 
 export PKR_VAR_consul_version = "v1.10"
 export PKR_VAR_vault_version = "v1.7"
 export PKR_VAR_nomad_version = "v1.1"
+
+# Consul variables
+export PKR_VAR_raft_multiplier = 5
 
 # Source environment variables
 -include .env
@@ -45,8 +48,7 @@ endif
 ifneq (,$(findstring vault-server, $(BUILDS)))
 	@packer build -timestamp-ui -only=$(BUILDS) ./vault-server/vault-server.pkr.hcl
 endif
-# ifneq (,$(findstring consul-vault-nomad-server, $(BUILDS)))
-ifneq (,$(findstring example, $(BUILDS)))
+ifneq (,$(findstring consul-vault-nomad-server, $(BUILDS)))
 	@packer build -timestamp-ui -only=$(BUILDS) ./consul-vault-nomad-server/consul-vault-nomad-server.pkr.hcl
 endif
 

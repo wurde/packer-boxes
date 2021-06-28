@@ -2,13 +2,13 @@
 # generating images from them for various platforms.
 
 variable "consul_version" {
-  type        = string
   description = "Consul version to install. See latest releases here: https://github.com/hashicorp/consul/releases"
+  type        = string
 }
 
 variable "googlecompute_project_id" {
-  type        = string
   description = "The Google Cloud project ID used to launch instances and store images."
+  type        = string
   default     = ""
 }
 
@@ -39,6 +39,10 @@ locals {
 
   # The timestamp when the build ran.
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
+
+  environment_vars = [
+    "RAFT_MULTIPLIER=${var.raft_multiplier}"
+  ]
 }
 
 # The top-level source block defines reusable
@@ -293,9 +297,9 @@ build {
   # set the 'image' field from the top-level source block in here, as well as
   # the 'name' and 'output_image' fields cannot be set in the top-level source block.
   sources = [
-    "sources.amazon-ebs.consul-server",
-    "sources.googlecompute.consul-server",
-    "sources.docker.consul-server",
+    "source.amazon-ebs.consul-server",
+    "source.googlecompute.consul-server",
+    "source.docker.consul-server",
   ]
 
   # Copy setup files. The "file" Packer provisioner uploads
@@ -339,17 +343,23 @@ build {
   provisioner "shell" {
     only   = ["amazon-ebs.consul-server"]
     inline = ["sh /tmp/setup-amazon-ebs.sh"]
+
+    environment_vars = local.environment_vars
   }
 
   # Run the Google Compute script.
   provisioner "shell" {
     only   = ["googlecompute.consul-server"]
     inline = ["sh /tmp/setup-googlecompute.sh"]
+
+    environment_vars = local.environment_vars
   }
 
   # Run the Docker script.
   provisioner "shell" {
     only   = ["docker.consul-server"]
     inline = ["sh /tmp/setup-docker.sh"]
+
+    environment_vars = local.environment_vars
   }
 }
