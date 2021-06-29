@@ -101,6 +101,19 @@ verify_server_hostname = true
 performance {
   raft_multiplier = ${RAFT_MULTIPLIER}
 }
+
+ports {
+  dns      = ${CONSUL_PORT_DNS}
+  http     = ${CONSUL_PORT_HTTP}
+  https    = ${CONSUL_PORT_HTTPS}
+  grpc     = ${CONSUL_PORT_GRPC}
+  serf_lan = ${CONSUL_PORT_SERF_LAN}
+
+  sidecar_min_port = ${CONSUL_PORT_SIDECAR_MIN_PORT}
+  sidecar_max_port = ${CONSUL_PORT_SIDECAR_MAX_PORT}
+  expose_min_port  = ${CONSUL_PORT_EXPOSE_MIN_PORT}
+  expose_max_port  = ${CONSUL_PORT_EXPOSE_MAX_PORT}
+}
 EOF
   chown consul:consul /etc/consul.d/consul.hcl
 }
@@ -113,8 +126,13 @@ server = true
 client_addr = "${CLIENT_ADDR}"
 bootstrap_expect = ${BOOTSTRAP_EXPECT}
 
+ports {
+  serf_wan = ${CONSUL_PORT_SERF_WAN}
+  server   = ${CONSUL_PORT_SERVER}
+}
+
 ui_config {
-  enabled = true
+  enabled = ${CONSUL_UI_ENABLED}
 }
 EOF
   chown consul:consul /etc/consul.d/server.hcl

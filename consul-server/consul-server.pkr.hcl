@@ -82,6 +82,66 @@ variable "consul_node_name" {
   type        = string
 }
 
+variable "consul_port_dns" {
+  description = "Port used for the Consul DNS server."
+  type        = number
+}
+
+variable "consul_port_http" {
+  description = "Port used for the Consul HTTP API."
+  type        = number
+}
+
+variable "consul_port_https" {
+  description = "Port used for the Consul HTTPS API."
+  type        = number
+}
+
+variable "consul_port_grpc" {
+  description = "Port used for the Consul gRPC API."
+  type        = number
+}
+
+variable "consul_port_serf_lan" {
+  description = "Port used for the Consul Serf LAN."
+  type        = number
+}
+
+variable "consul_port_serf_wan" {
+  description = "Port used for the Consul Serf WAN."
+  type        = number
+}
+
+variable "consul_port_server" {
+  description = "Port used for the Consul Server RPC address."
+  type        = number
+}
+
+variable "consul_port_sidecar_min_port" {
+  description = "Inclusive minimum port number to use for automatically assigned Consul sidecar service registrations."
+  type        = number
+}
+
+variable "consul_port_sidecar_max_port" {
+  description = "Inclusive maximum port number to use for automatically assigned Consul sidecar service registrations."
+  type        = number
+}
+
+variable "consul_port_expose_min_port" {
+  description = "Inclusive minimum port number to use for automatically assigned exposed check listeners."
+  type        = number
+}
+
+variable "consul_port_expose_max_port" {
+  description = "Inclusive maximum port number to use for automatically assigned exposed check listeners."
+  type        = number
+}
+
+variable "consul_ui_enabled" {
+  description = "Enables Consul's built-in web UI service."
+  type        = string
+}
+
 # The locals block, also called the local-variable
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
@@ -98,6 +158,18 @@ locals {
     "BOOTSTRAP_EXPECT=${var.bootstrap_expect}",
     "CLIENT_ADDR=${var.client_addr}",
     "CONSUL_NODE_NAME=${var.consul_node_name}",
+    "CONSUL_PORT_DNS=${var.consul_port_dns}",
+    "CONSUL_PORT_HTTP=${var.consul_port_http}",
+    "CONSUL_PORT_HTTPS=${var.consul_port_https}",
+    "CONSUL_PORT_GRPC=${var.consul_port_grpc}",
+    "CONSUL_PORT_SERF_LAN=${var.consul_port_serf_lan}",
+    "CONSUL_PORT_SERF_WAN=${var.consul_port_serf_wan}",
+    "CONSUL_PORT_SERVER=${var.consul_port_server}",
+    "CONSUL_PORT_SIDECAR_MIN_PORT=${var.consul_port_sidecar_min_port}",
+    "CONSUL_PORT_SIDECAR_MAX_PORT=${var.consul_port_sidecar_max_port}",
+    "CONSUL_PORT_EXPOSE_MIN_PORT=${var.consul_port_expose_min_port}",
+    "CONSUL_PORT_EXPOSE_MAX_PORT=${var.consul_port_expose_max_port}",
+    "CONSUL_UI_ENABLED=${var.consul_ui_enabled}",
   ]
 }
 

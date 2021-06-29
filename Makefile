@@ -24,6 +24,18 @@ export PKR_VAR_consul_node_name = consul-server-node-one
 export PKR_VAR_raft_multiplier = 5
 export PKR_VAR_bootstrap_expect = 1
 export PKR_VAR_client_addr = 0.0.0.0
+export PKR_VAR_consul_ui_enabled = false
+export PKR_VAR_consul_port_dns = 8600
+export PKR_VAR_consul_port_http = 8500
+export PKR_VAR_consul_port_https = -1
+export PKR_VAR_consul_port_grpc = -1
+export PKR_VAR_consul_port_serf_lan = 8301
+export PKR_VAR_consul_port_serf_wan = 8302
+export PKR_VAR_consul_port_server = 8300
+export PKR_VAR_consul_port_sidecar_min_port = 21000
+export PKR_VAR_consul_port_sidecar_max_port = 21255
+export PKR_VAR_consul_port_expose_min_port = 21500
+export PKR_VAR_consul_port_expose_max_port = 21755
 
 # Source environment variables
 -include .env
