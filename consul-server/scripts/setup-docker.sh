@@ -112,6 +112,10 @@ configureServer() {
 server = true
 client_addr = "${CLIENT_ADDR}"
 bootstrap_expect = ${BOOTSTRAP_EXPECT}
+
+ui_config {
+  enabled = true
+}
 EOF
   chown consul:consul /etc/consul.d/server.hcl
 }

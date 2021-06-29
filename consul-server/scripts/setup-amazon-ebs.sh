@@ -63,7 +63,7 @@ configureConsul() {
   echo "Configuring Consul"
 
   cat << EOF | sudo tee /etc/consul.d/consul.hcl
-node_name = "consul-server-node-one"
+node_name = "aws-${CONSUL_NODE_NAME}"
 datacenter = "${AWS_DATACENTER}"
 data_dir = "/opt/consul"
 encrypt = "${encryption_key}"

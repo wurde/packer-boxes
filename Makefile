@@ -20,6 +20,7 @@ export PKR_VAR_gcp_datacenter = gcp-dc1
 export PKR_VAR_docker_datacenter = docker-dc1
 
 # Consul variables
+export PKR_VAR_consul_node_name = consul-server-node-one
 export PKR_VAR_raft_multiplier = 5
 export PKR_VAR_bootstrap_expect = 1
 export PKR_VAR_client_addr = 0.0.0.0

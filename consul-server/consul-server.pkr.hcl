@@ -77,6 +77,11 @@ variable "client_addr" {
   type        = string
 }
 
+variable "consul_node_name" {
+  description = "The name of this node in the cluster. This must be unique within the cluster. By default this is the hostname of the machine."
+  type        = string
+}
+
 # The locals block, also called the local-variable
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
@@ -92,6 +97,7 @@ locals {
     "RAFT_MULTIPLIER=${var.raft_multiplier}",
     "BOOTSTRAP_EXPECT=${var.bootstrap_expect}",
     "CLIENT_ADDR=${var.client_addr}",
+    "CONSUL_NODE_NAME=${var.consul_node_name}",
   ]
 }
 
@@ -235,7 +241,7 @@ source "googlecompute" "consul-server" {
   project_id = var.googlecompute_project_id
 
   # The unique name of the image.
-  image_name        = "consul-server-${local.version}-googlecompute-${local.timestamp}"
+  image_name        = "consul-server-googlecompute-${local.timestamp}"
   image_description = "A Minimal Ubuntu Image for deploying a Consul server."
 
   # The source image to use to create the new image from.
@@ -290,7 +296,7 @@ source "docker" "consul-server" {
   commit = true
 
   # Set a message for the commit.
-  message = "Build consul-server-${local.version}-docker-${local.timestamp}."
+  message = "Build consul-server-docker-${local.timestamp}."
 
   changes = [
     # Set  metadata to an image. A LABEL is a key-value pair. To include spaces within a LABEL value, use quotes and backslashes as you would in command-line parsing. A few usage examples:
