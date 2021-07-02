@@ -1,20 +1,26 @@
-BUILDS = amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-server, amazon-ebs.nomad-client,  googlecompute.nomad-client, docker.nomad-client, amazon-ebs.nomad-server, googlecompute.nomad-server, docker.nomad-server, amazon-ebs.vault-server, googlecompute.vault-server, docker.vault-server, amazon-ebs.consul-vault-nomad-server, googlecompute.consul-vault-nomad-server, docker.consul-vault-nomad-server
+BUILDS = amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-server, amazon-ebs.nomad-client,  googlecompute.nomad-client, docker.nomad-client, amazon-ebs.nomad-server, googlecompute.nomad-server, docker.nomad-server, amazon-ebs.vault-server, googlecompute.vault-server, docker.vault-server
 
+# Set default versions of Consul, Vault, and Nomad.
 export PKR_VAR_consul_version = "v1.10"
 export PKR_VAR_vault_version = "v1.7"
 export PKR_VAR_nomad_version = "v1.1"
 
+# Set default root device size in GB.
 export PKR_VAR_disk_size = 10
 
+# Set defaults for the Amazon AMI Builder.
 export PKR_VAR_aws_region = us-east-2
 export PKR_VAR_ec2_instance_type = t3a.nano
 
+# Set defaults for the Google Compute Builder.
 export PKR_VAR_gcp_zone = us-central1-a
 export PKR_VAR_gcp_machine_type = n1-standard-1
 export PKR_VAR_gcp_source_image_family = ubuntu-minimal-2104
 
+# Set defaults for the Docker Builder.
 export PKR_VAR_docker_image = amd64/alpine:3.13
 
+# Set default datacenter names.
 export PKR_VAR_aws_datacenter = aws-dc1
 export PKR_VAR_gcp_datacenter = gcp-dc1
 export PKR_VAR_docker_datacenter = docker-dc1
