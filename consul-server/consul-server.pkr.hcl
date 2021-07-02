@@ -298,12 +298,12 @@ source "amazon-ebs" "consul-server" {
   }
 
   tags = {
-    name = "consul_server"
+    "name": "consul_server"
 
     # Consul auto-join functionality enables bootstrapping
     # and auto-scaling Consul clusters via metadata.
     # https://www.consul.io/docs/install/cloud-auto-join
-    consul_auto_join = "main"
+    "consul_auto_join": "main"
   }
 }
 
@@ -347,12 +347,12 @@ source "googlecompute" "consul-server" {
   on_host_maintenance = "MIGRATE"
 
   labels = {
-    name = "consul_server"
+    "name" : "consul_server"
 
     # Consul auto-join functionality enables bootstrapping
     # and auto-scaling Consul clusters via metadata.
     # https://www.consul.io/docs/install/cloud-auto-join
-    consul_auto_join = "main"
+    "consul_auto_join" : "main"
   }
 }
 

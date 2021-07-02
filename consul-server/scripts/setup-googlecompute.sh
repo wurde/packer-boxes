@@ -53,9 +53,9 @@ createCertificateAuthority() {
 
 createTlsCertificates() {
   echo "Generating TLS certificates for RPC encryption"
-  sudo consul tls cert create -server -dc $AWS_DATACENTER
-  sudo consul tls cert create -server -dc $AWS_DATACENTER
-  sudo consul tls cert create -server -dc $AWS_DATACENTER
+  sudo consul tls cert create -server -dc $GCP_DATACENTER
+  sudo consul tls cert create -server -dc $GCP_DATACENTER
+  sudo consul tls cert create -server -dc $GCP_DATACENTER
   sudo chown --recursive consul:consul /etc/consul.d
 }
 
@@ -63,17 +63,17 @@ configureConsul() {
   echo "Configuring Consul"
 
   cat << EOF | sudo tee /etc/consul.d/consul.hcl
-node_name = "aws-${CONSUL_NODE_NAME}"
-datacenter = "${AWS_DATACENTER}"
+node_name = "gcp-${CONSUL_NODE_NAME}"
+datacenter = "${GCP_DATACENTER}"
 data_dir = "/opt/consul"
 encrypt = "${encryption_key}"
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
-cert_file = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0.pem"
-key_file = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0-key.pem"
+cert_file = "/etc/consul.d/${GCP_DATACENTER}-server-consul-0.pem"
+key_file = "/etc/consul.d/${GCP_DATACENTER}-server-consul-0-key.pem"
 verify_incoming = true
 verify_outgoing = true
 verify_server_hostname = true
-retry_join = ["provider=aws tag_key=Consul-Auto-Join tag_value=main region=${AWS_REGION}"]
+retry_join = ["provider=gce tag_value=consul_auto_join"]
 
 performance {
   raft_multiplier = ${RAFT_MULTIPLIER}
