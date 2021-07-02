@@ -253,9 +253,11 @@ source "amazon-ebs" "consul-server" {
   }
 
   # Lookup the vpc_id field.
+  # https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeVpcs.html
   vpc_filter {
     filters = {
       "isDefault" : "true"
+      "state" : "available"
     }
   }
 
@@ -412,10 +414,9 @@ source "docker" "consul-server" {
   ]
 }
 
-# The build block defines what builders are
-# started, how to provision them and if
-# necessary what to do with their artifacts
-# using post-process.
+# The build block defines what builders are  started, how
+# to provision them and if necessary what to do with their
+# artifacts using post-process.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/build
 build {
   # Use the singular `source` block set specific fields.
