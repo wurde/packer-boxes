@@ -1,5 +1,8 @@
 BUILDS = amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-server, amazon-ebs.nomad-client,  googlecompute.nomad-client, docker.nomad-client, amazon-ebs.nomad-server, googlecompute.nomad-server, docker.nomad-server, amazon-ebs.vault-server, googlecompute.vault-server, docker.vault-server
 
+# Pass through the Google Cloud project ID.
+export PKR_VAR_googlecompute_project_id
+
 # Set default versions of Consul, Vault, and Nomad.
 export PKR_VAR_consul_version = "v1.10"
 export PKR_VAR_vault_version = "v1.7"
@@ -14,7 +17,7 @@ export PKR_VAR_ec2_instance_type = t3a.nano
 
 # Set defaults for the Google Compute Builder.
 export PKR_VAR_gcp_zone = us-central1-a
-export PKR_VAR_gcp_machine_type = n1-standard-1
+export PKR_VAR_gcp_machine_type = e2-micro
 export PKR_VAR_gcp_source_image_family = ubuntu-minimal-2104
 
 # Set defaults for the Docker Builder.

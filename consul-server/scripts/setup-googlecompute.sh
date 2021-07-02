@@ -9,7 +9,7 @@ setTimezone() {
 # install, remove, and update software.
 updatePackages() {
   echo "Updating packages"
-  sudo apt update -y
+  sudo apt-get update -y
 }
 
 main() {
