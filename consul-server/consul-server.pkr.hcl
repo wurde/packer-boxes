@@ -297,7 +297,6 @@ source "amazon-ebs" "consul-server" {
 
   tags = {
     name = "consul_server"
-    os   = "amazon_linux_2"
 
     # Consul auto-join functionality enables bootstrapping
     # and auto-scaling Consul clusters via metadata.
@@ -347,7 +346,6 @@ source "googlecompute" "consul-server" {
 
   labels = {
     name = "consul_server"
-    os   = "minimal_ubuntu_2104"
 
     # Consul auto-join functionality enables bootstrapping
     # and auto-scaling Consul clusters via metadata.
