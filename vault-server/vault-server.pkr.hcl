@@ -6,6 +6,62 @@ variable "vault_version" {
   description = "Vault version to install. See latest releases here: https://github.com/hashicorp/vault/releases"
 }
 
+variable "aws_region" {
+  description = "The AWS Region used for the EC2 instance."
+  type        = string
+}
+
+variable "ec2_instance_type" {
+  description = "The EC2 instance type."
+  type        = string
+}
+
+variable "googlecompute_project_id" {
+  description = "The Google Cloud project ID used to launch instances and store images."
+  type        = string
+  default     = ""
+}
+
+variable "gcp_zone" {
+  description = "The GCP Zone used to launch the instance."
+  type        = string
+}
+
+variable "gcp_machine_type" {
+  description = "The GCP machine type."
+  type        = string
+}
+
+variable "gcp_source_image_family" {
+  description = "The GCP Source Image."
+  type        = string
+}
+
+variable "docker_image" {
+  description = "The Docker image."
+  type        = string
+}
+
+variable "disk_size" {
+  description = "The size of the disk in GB."
+  type        = number
+}
+
+variable "aws_datacenter" {
+  description = "The AWS datacenter in which the agent is running."
+  type        = string
+}
+
+variable "gcp_datacenter" {
+  description = "The GCP datacenter in which the agent is running."
+  type        = string
+}
+
+variable "docker_datacenter" {
+  description = "The Docker datacenter in which the agent is running."
+  type        = string
+}
+
 # The locals block, also called the local-variable
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
