@@ -459,7 +459,7 @@ build {
     inline = ["sh ./consul-server/scripts/setup-local.sh"]
   }
 
-  # Copy the consul binary.
+  # Copy the binary.
   provisioner "file" {
     source      = "./tmp/"
     destination = "/tmp"
