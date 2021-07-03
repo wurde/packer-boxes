@@ -70,6 +70,7 @@ locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 
   environment_vars = [
+    "VAULT_VERSION=${var.vault_version}",
     "AWS_REGION=${var.aws_region}",
     "AWS_DATACENTER=${var.aws_datacenter}",
     "GCP_DATACENTER=${var.gcp_datacenter}",
@@ -307,7 +308,8 @@ build {
 
   # Run the local setup script.
   provisioner "shell-local" {
-    inline = ["sh ./vault-server/scripts/setup-local.sh"]
+    inline           = ["sh ./vault-server/scripts/setup-local.sh"]
+    environment_vars = local.environment_vars
   }
 
   # Copy the binary.

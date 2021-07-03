@@ -4,9 +4,9 @@ BUILDS = amazon-ebs.consul-server, googlecompute.consul-server, docker.consul-se
 export PKR_VAR_googlecompute_project_id
 
 # Set default versions of Consul, Vault, and Nomad.
-export PKR_VAR_consul_version = "v1.10"
-export PKR_VAR_vault_version = "v1.7"
-export PKR_VAR_nomad_version = "v1.1"
+export PKR_VAR_consul_version = v1.10.0
+export PKR_VAR_vault_version = v1.7.3
+export PKR_VAR_nomad_version = v1.1.2
 
 # Set default root device size in GB.
 export PKR_VAR_disk_size = 10

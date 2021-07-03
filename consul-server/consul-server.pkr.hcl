@@ -456,7 +456,8 @@ build {
 
   # Run the local setup script.
   provisioner "shell-local" {
-    inline = ["sh ./consul-server/scripts/setup-local.sh"]
+    inline           = ["sh ./consul-server/scripts/setup-local.sh"]
+    environment_vars = local.environment_vars
   }
 
   # Copy the binary.
