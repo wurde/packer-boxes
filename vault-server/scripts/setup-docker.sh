@@ -136,12 +136,6 @@ validateConfig() {
   consul validate /etc/consul.d/consul.hcl
 }
 
-moveDockerEntrypoint() {
-  echo "Moving the Docker image entrypoint"
-  chown root:root /tmp/docker-entrypoint.sh
-  mv /tmp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-}
-
 main() {
   echo "Running"
 
@@ -159,7 +153,6 @@ main() {
   # configureConsul
   # configureServer
   # validateConfig
-  # moveDockerEntrypoint
 
   echo "Complete"
 }
