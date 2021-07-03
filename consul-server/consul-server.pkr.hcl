@@ -37,7 +37,7 @@ variable "gcp_source_image_family" {
   type        = string
 }
 
-variable "docker_image" {
+variable "consul_docker_image" {
   description = "The Docker image."
   type        = string
 }
@@ -362,56 +362,13 @@ source "docker" "consul-server" {
   # The base image for the Docker container that will be started.
   # This image will be pulled from the Docker registry if it
   # doesn't already exist.
-  image = var.docker_image
+  image = var.consul_docker_image
 
   # The container will be committed to an image rather than exported.
   commit = true
 
   # Set a message for the commit.
   message = "Build consul-server-docker-${local.timestamp}."
-
-  changes = [
-    # Set  metadata to an image. A LABEL is a key-value pair. To include spaces within a LABEL value, use quotes and backslashes as you would in command-line parsing. A few usage examples:
-    "LABEL version=${var.consul_version}",
-
-    # Expose the data directory as a volume since there's
-    # mutable state in there.
-    "VOLUME /opt/consul",
-
-    # Server RPC is used for communication between Consul
-    # clients and servers for internal request forwarding.
-    "EXPOSE 8300",
-
-    # Serf LAN and WAN (WAN is used only by Consul servers)
-    # are used for gossip between Consul agents. LAN is
-    # within the datacenter and WAN is between just the
-    # Consul servers in all datacenters.
-    "EXPOSE 8301 8301/udp 8302 8302/udp",
-
-    # HTTP and DNS (TCP and UDP) are the primary interfaces
-    # that applications use to interact with Consul.
-    "EXPOSE 8500 8600 8600/udp",
-
-    # Set environment variables.
-    #
-    # CONSUL_DATA_DIR is exposed as a volume for possible
-    # persistent storage. The CONSUL_CONFIG_DIR isn't
-    # exposed as a volume but you can compose additional
-    # config files in there if you use this image as a
-    # base, or use CONSUL_LOCAL_CONFIG below.
-    "ENV CONSUL_DATA_DIR /opt/consul",
-    "ENV CONSUL_CONFIG_DIR /etc/consul.d/",
-
-    # Consul doesn't need root privileges so we run it as
-    # the consul user from the entry point script. The entry
-    # point script also uses dumb-init as the top-level
-    # process to reap any zombie processes created by Consul
-    # sub-processes.
-    "ENTRYPOINT [\"docker-entrypoint.sh\"]",
-
-    # Provide default arguments to ENTRYPOINT.
-    "CMD [\"agent\", \"-config-dir=/etc/consul.d/\"]"
-  ]
 }
 
 # The build block defines what builders are  started, how
@@ -460,9 +417,14 @@ build {
     environment_vars = local.environment_vars
   }
 
-  # Copy the binary.
+  # Copy the binary and remote scripts.
   provisioner "file" {
-    source      = "./tmp/"
+    only = [
+      "amazon-ebs.consul-server",
+      "googlecompute.consul-server",
+    ]
+
+    source      = "./tmp/consul"
     destination = "/tmp"
     generated   = true
   }

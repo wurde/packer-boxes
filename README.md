@@ -69,6 +69,12 @@ docker run -it [image-id]
 docker exec -it [container-id] bash
 ```
 
+The following images are used:
+
+- [consul:latest](https://hub.docker.com/_/consul/)
+- [vault:latest](https://hub.docker.com/_/vault/)
+- [ubuntu:latest](https://hub.docker.com/_/ubuntu/)
+
 ## License
 
 This project is __FREE__ to use, reuse, remix, and resell.

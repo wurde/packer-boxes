@@ -37,7 +37,7 @@ variable "gcp_source_image_family" {
   type        = string
 }
 
-variable "docker_image" {
+variable "nomad_docker_image" {
   description = "The Docker image."
   type        = string
 }
@@ -257,7 +257,7 @@ source "docker" "nomad-server" {
   # The base image for the Docker container that will be started.
   # This image will be pulled from the Docker registry if it
   # doesn't already exist.
-  image = var.docker_image
+  image = var.nomad_docker_image
 
   # The container will be committed to an image rather than exported.
   commit = true

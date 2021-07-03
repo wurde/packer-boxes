@@ -21,7 +21,12 @@ export PKR_VAR_gcp_machine_type = e2-micro
 export PKR_VAR_gcp_source_image_family = ubuntu-minimal-2104
 
 # Set defaults for the Docker Builder.
-export PKR_VAR_docker_image = amd64/alpine:3.13
+# https://hub.docker.com/_/consul/
+export PKR_VAR_consul_docker_image = consul:latest
+# https://hub.docker.com/_/vault/
+export PKR_VAR_vault_docker_image = vault:latest
+# https://hub.docker.com/_/ubuntu/
+export PKR_VAR_nomad_docker_image = ubuntu:latest
 
 # Set default datacenter names.
 export PKR_VAR_aws_datacenter = aws-dc1

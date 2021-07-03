@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# `date` => UTC
 setTimezone() {
   echo "Setting timezone to UTC"
   apk add tzdata
@@ -14,56 +15,6 @@ updatePackages() {
   apk -U upgrade
 }
 
-# dumb-init is a simple process supervisor that
-# forwards signals to children. It is designed
-# to run as PID1 in minimal container environments.
-installDumbInit() {
-  echo "Installing dumb-init"
-  apk add --no-cache dumb-init
-}
-
-# su-exec allows you to switch user and group id
-# before executing a command
-installSuExec() {
-  echo "Installing su-exec"
-  apk add --no-cache su-exec
-}
-
-# Set up nsswitch.conf for Go's "netgo" implementation
-# which is used by Consul, otherwise DNS supercedes the
-# container's hosts file, which we don't want.
-setupNameServiceSwitch() {
-  test -e /etc/nsswitch.conf || echo 'hosts: files dns' > /etc/nsswitch.conf
-}
-
-moveConsul() {
-  echo "Moving the Consul binary"
-  chown root:root /tmp/consul
-  mv /tmp/consul /usr/bin/consul
-}
-
-adduserConsul() {
-  echo "Creating a non-privileged user to run Consul"
-  addgroup -S consul
-  adduser -S -h /etc/consul.d -s /bin/false -G consul consul
-}
-
-mkdirConsulConfig() {
-  echo "Creating Consul's configuration directory"
-  mkdir --parents /etc/consul.d
-  touch /etc/consul.d/consul.hcl
-  chmod 640 /etc/consul.d/consul.hcl
-  touch /etc/consul.d/server.hcl
-  chmod 640 /etc/consul.d/server.hcl
-  chown --recursive consul:consul /etc/consul.d
-}
-
-mkdirConsulData() {
-  echo "Creating Consul's data directory"
-  mkdir --parents /opt/consul
-  chown --recursive consul:consul /opt/consul
-}
-
 createEncryptionKey() {
   echo "Generating a new 32-byte encryption key"
   encryption_key=$(consul keygen)
@@ -71,9 +22,10 @@ createEncryptionKey() {
 
 createCertificateAuthority() {
   echo "Creating a Consul Certificate Authority"
-  cd /etc/consul.d
+  cd /consul/config
   consul tls ca create
-  chown --recursive consul:consul /etc/consul.d
+  chown --recursive consul:consul /consul/config
+  # TODO move to /etc/pki/tls/...
 }
 
 createTlsCertificates() {
@@ -81,21 +33,23 @@ createTlsCertificates() {
   consul tls cert create -server -dc $DOCKER_DATACENTER
   consul tls cert create -server -dc $DOCKER_DATACENTER
   consul tls cert create -server -dc $DOCKER_DATACENTER
-  chown --recursive consul:consul /etc/consul.d
+  chown --recursive consul:consul /consul/config
+  # TODO move to /etc/pki/tls/...
 }
 
 configureConsul() {
   echo "Configuring Consul"
 
-  cat << EOF | tee /etc/consul.d/consul.hcl
-datacenter = "${DOCKER_DATACENTER}"
-data_dir = "/opt/consul"
-encrypt = "${encryption_key}"
-ca_file = "/etc/consul.d/consul-agent-ca.pem"
-cert_file = "/etc/consul.d/${DOCKER_DATACENTER}-server-consul-0.pem"
-key_file = "/etc/consul.d/${DOCKER_DATACENTER}-server-consul-0-key.pem"
-verify_incoming = true
-verify_outgoing = true
+  cat << EOF | tee /consul/config/consul.hcl
+datacenter = "docker-${DOCKER_DATACENTER}"
+data_dir   = "/consul/data"
+encrypt    = "${encryption_key}"
+ca_file    = "/etc/pki/tls/certs/consul-agent-ca.pem"
+cert_file  = "/etc/pki/tls/certs/${DOCKER_DATACENTER}-server-consul-0.pem"
+key_file   = "/etc/pki/tls/private/${DOCKER_DATACENTER}-server-consul-0-key.pem"
+
+verify_incoming        = true
+verify_outgoing        = true
 verify_server_hostname = true
 
 performance {
@@ -115,13 +69,13 @@ ports {
   expose_max_port  = ${CONSUL_PORT_EXPOSE_MAX_PORT}
 }
 EOF
-  chown consul:consul /etc/consul.d/consul.hcl
+  chown consul:consul /consul/config/consul.hcl
 }
 
 configureServer() {
   echo "Configuring Consul server"
 
-  cat << EOF | tee /etc/consul.d/server.hcl
+  cat << EOF | tee /consul/config/server.hcl
 server = true
 client_addr = "${CLIENT_ADDR}"
 bootstrap_expect = ${BOOTSTRAP_EXPECT}
@@ -135,39 +89,25 @@ ui_config {
   enabled = ${CONSUL_UI_ENABLED}
 }
 EOF
-  chown consul:consul /etc/consul.d/server.hcl
+  chown consul:consul /consul/config/server.hcl
 }
 
 validateConfig() {
   echo "Validating the Consul configuration"
-  consul validate /etc/consul.d/consul.hcl
-}
-
-moveDockerEntrypoint() {
-  echo "Moving the Docker image entrypoint"
-  chown root:root /tmp/docker-entrypoint.sh
-  mv /tmp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+  consul validate /consul/config/consul.hcl
 }
 
 main() {
   echo "Running"
 
-  setTimezone
-  updatePackages
-  installDumbInit
-  installSuExec
-  setupNameServiceSwitch
-  moveConsul
-  adduserConsul
-  mkdirConsulConfig
-  mkdirConsulData
-  createEncryptionKey
-  createCertificateAuthority
-  createTlsCertificates
-  configureConsul
-  configureServer
-  validateConfig
-  moveDockerEntrypoint
+  # setTimezone
+  # updatePackages
+  # createEncryptionKey
+  # createCertificateAuthority
+  # createTlsCertificates
+  # configureConsul
+  # configureServer
+  # validateConfig
 
   echo "Complete"
 }
