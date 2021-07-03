@@ -20,33 +20,29 @@ createEncryptionKey() {
   encryption_key=$(consul keygen)
 }
 
-createCertificateAuthority() {
+setupTlsCertificates() {
   echo "Creating a Consul Certificate Authority"
   cd /consul/config
+  mkdir -p /etc/pki/tls/certs && cd /etc/pki/tls/certs
   consul tls ca create
-  chown --recursive consul:consul /consul/config
-  # TODO move to /etc/pki/tls/...
-}
 
-createTlsCertificates() {
   echo "Generating TLS certificates for RPC encryption"
+  mkdir -p /etc/pki/tls/private
   consul tls cert create -server -dc $DOCKER_DATACENTER
-  consul tls cert create -server -dc $DOCKER_DATACENTER
-  consul tls cert create -server -dc $DOCKER_DATACENTER
-  chown --recursive consul:consul /consul/config
-  # TODO move to /etc/pki/tls/...
+
+  mv *-key.pem /etc/pki/tls/private
 }
 
 configureConsul() {
   echo "Configuring Consul"
 
   cat << EOF | tee /consul/config/consul.hcl
-datacenter = "docker-${DOCKER_DATACENTER}"
+datacenter = "${DOCKER_DATACENTER}"
 data_dir   = "/consul/data"
 encrypt    = "${encryption_key}"
 ca_file    = "/etc/pki/tls/certs/consul-agent-ca.pem"
-cert_file  = "/etc/pki/tls/certs/${DOCKER_DATACENTER}-server-consul-0.pem"
-key_file   = "/etc/pki/tls/private/${DOCKER_DATACENTER}-server-consul-0-key.pem"
+cert_file  = "/etc/pki/tls/certs/${DOCKER_DATACENTER}-server-consul.pem"
+key_file   = "/etc/pki/tls/private/${DOCKER_DATACENTER}-server-consul-key.pem"
 
 verify_incoming        = true
 verify_outgoing        = true
@@ -100,14 +96,14 @@ validateConfig() {
 main() {
   echo "Running"
 
-  # setTimezone
-  # updatePackages
-  # createEncryptionKey
-  # createCertificateAuthority
-  # createTlsCertificates
-  # configureConsul
-  # configureServer
-  # validateConfig
+  setTimezone
+  updatePackages
+  createEncryptionKey
+  createCertificateAuthority
+  setupTlsCertificates
+  configureConsul
+  configureServer
+  validateConfig
 
   echo "Complete"
 }
