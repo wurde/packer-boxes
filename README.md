@@ -67,6 +67,9 @@ docker run -it [image-id]
 
 # Enter a running Docker container with a new TTY
 docker exec -it [container-id] bash
+
+# Check the container logs
+docker logs [container-id]
 ```
 
 The following images are used:

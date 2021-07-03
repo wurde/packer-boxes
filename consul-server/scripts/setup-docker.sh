@@ -41,8 +41,8 @@ datacenter = "${DOCKER_DATACENTER}"
 data_dir   = "/consul/data"
 encrypt    = "${encryption_key}"
 ca_file    = "/etc/pki/tls/certs/consul-agent-ca.pem"
-cert_file  = "/etc/pki/tls/certs/${DOCKER_DATACENTER}-server-consul.pem"
-key_file   = "/etc/pki/tls/private/${DOCKER_DATACENTER}-server-consul-key.pem"
+cert_file  = "/etc/pki/tls/certs/${DOCKER_DATACENTER}-server-consul-0.pem"
+key_file   = "/etc/pki/tls/private/${DOCKER_DATACENTER}-server-consul-0-key.pem"
 
 verify_incoming        = true
 verify_outgoing        = true
