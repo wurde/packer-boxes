@@ -319,27 +319,27 @@ build {
     generated   = true
   }
 
-  #  # Run the Amazon EBS script.
-  #  provisioner "shell" {
-  #    only   = ["amazon-ebs.vault-server"]
-  #    inline = ["sh /tmp/setup-amazon-ebs.sh"]
-  #
-  #    environment_vars = local.environment_vars
-  #  }
-  #
-  #  # Run the Google Compute script.
-  #  provisioner "shell" {
-  #    only   = ["googlecompute.vault-server"]
-  #    inline = ["sh /tmp/setup-googlecompute.sh"]
-  #
-  #    environment_vars = local.environment_vars
-  #  }
-  #
-  #  # Run the Docker script.
-  #  provisioner "shell" {
-  #    only   = ["docker.vault-server"]
-  #    inline = ["sh /tmp/setup-docker.sh"]
-  #
-  #    environment_vars = local.environment_vars
-  #  }
+  # Run the Amazon EBS script.
+  provisioner "shell" {
+    only   = ["amazon-ebs.vault-server"]
+    inline = ["sh /tmp/setup-amazon-ebs.sh"]
+
+    environment_vars = local.environment_vars
+  }
+
+  # Run the Google Compute script.
+  provisioner "shell" {
+    only   = ["googlecompute.vault-server"]
+    inline = ["sh /tmp/setup-googlecompute.sh"]
+
+    environment_vars = local.environment_vars
+  }
+
+  # Run the Docker script.
+  provisioner "shell" {
+    only   = ["docker.vault-server"]
+    inline = ["sh /tmp/setup-docker.sh"]
+
+    environment_vars = local.environment_vars
+  }
 }
