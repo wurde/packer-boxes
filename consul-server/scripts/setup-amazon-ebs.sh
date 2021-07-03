@@ -63,16 +63,18 @@ configureConsul() {
   echo "Configuring Consul"
 
   cat << EOF | sudo tee /etc/consul.d/consul.hcl
-node_name = "aws-${CONSUL_NODE_NAME}"
+node_name  = "aws-${CONSUL_NODE_NAME}"
 datacenter = "${AWS_DATACENTER}"
-data_dir = "/opt/consul"
-encrypt = "${encryption_key}"
-ca_file = "/etc/consul.d/consul-agent-ca.pem"
-cert_file = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0.pem"
-key_file = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0-key.pem"
-verify_incoming = true
-verify_outgoing = true
+data_dir   = "/opt/consul"
+encrypt    = "${encryption_key}"
+ca_file    = "/etc/consul.d/consul-agent-ca.pem"
+cert_file  = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0.pem"
+key_file   = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0-key.pem"
+
+verify_incoming        = true
+verify_outgoing        = true
 verify_server_hostname = true
+
 retry_join = ["provider=aws tag_key=Consul-Auto-Join tag_value=main region=${AWS_REGION}"]
 
 performance {
@@ -99,8 +101,8 @@ configureServer() {
   echo "Configuring Consul server"
 
   cat << EOF | sudo tee /etc/consul.d/server.hcl
-server = true
-client_addr = "${CLIENT_ADDR}"
+server           = true
+client_addr      = "${CLIENT_ADDR}"
 bootstrap_expect = ${BOOTSTRAP_EXPECT}
 
 ports {
