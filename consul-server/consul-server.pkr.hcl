@@ -417,7 +417,7 @@ build {
     environment_vars = local.environment_vars
   }
 
-  # Copy the binary and remote scripts.
+  # Copy the binary.
   provisioner "file" {
     only = [
       "amazon-ebs.consul-server",

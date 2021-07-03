@@ -314,7 +314,12 @@ build {
 
   # Copy the binary.
   provisioner "file" {
-    source      = "./tmp/"
+    only = [
+      "amazon-ebs.consul-server",
+      "googlecompute.consul-server",
+    ]
+
+    source      = "./tmp/nomad"
     destination = "/tmp"
     generated   = true
   }
