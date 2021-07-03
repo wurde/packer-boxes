@@ -12,7 +12,7 @@ check_golang() {
 
 install_vault() {
   echo "Installing the Vault binary"
-  if [ ! -d /tmp/vaultt ]; then
+  if [ ! -d /tmp/vault ]; then
     rm -rf /tmp/vault ~/go/bin/vault
     git clone https://github.com/hashicorp/vault.git /tmp/vault
     cd /tmp/vault
@@ -22,7 +22,7 @@ install_vault() {
     go install
     cd -
     mkdir -p ./tmp
-    cp ~/go/bin/vault ./tmp/vault
+    cp --force ~/go/bin/vault ./tmp/vault
   fi
 }
 
