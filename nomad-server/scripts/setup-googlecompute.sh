@@ -35,8 +35,8 @@ mkdirConsulConfig() {
 
 mkdirConsulData() {
   echo "Creating Consul's data directory"
-  sudo mkdir --parents /opt/consul
-  sudo chown --recursive consul:consul /opt/consul
+  sudo mkdir --parents /consul/data
+  sudo chown --recursive consul:consul /consul/data
 }
 
 createEncryptionKey() {
@@ -65,7 +65,7 @@ configureConsul() {
   cat << EOF | sudo tee /etc/consul.d/consul.hcl
 node_name = "gcp-${CONSUL_NODE_NAME}"
 datacenter = "${GCP_DATACENTER}"
-data_dir = "/opt/consul"
+data_dir = "/consul/data"
 encrypt = "${encryption_key}"
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
 cert_file = "/etc/consul.d/${GCP_DATACENTER}-server-consul-0.pem"

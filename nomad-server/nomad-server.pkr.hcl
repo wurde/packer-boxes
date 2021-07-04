@@ -62,6 +62,11 @@ variable "docker_datacenter" {
   type        = string
 }
 
+variable "nomad_region" {
+  description = " Specifies the region the Nomad agent is a member of."
+  type        = string
+}
+
 # The locals block, also called the local-variable
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
@@ -75,6 +80,7 @@ locals {
     "AWS_DATACENTER=${var.aws_datacenter}",
     "GCP_DATACENTER=${var.gcp_datacenter}",
     "DOCKER_DATACENTER=${var.docker_datacenter}",
+    "NOMAD_REGION=${var.nomad_region}",
   ]
 }
 
@@ -314,11 +320,6 @@ build {
 
   # Copy the binary.
   provisioner "file" {
-    only = [
-      "amazon-ebs.nomad-server",
-      "googlecompute.nomad-server",
-    ]
-
     source      = "./tmp/nomad"
     destination = "/tmp/nomad"
     generated   = true

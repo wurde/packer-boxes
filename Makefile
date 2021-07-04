@@ -56,6 +56,9 @@ export PKR_VAR_vault_cluster_name = vault-cluster-one
 export PKR_VAR_vault_ui_enabled = false
 export PKR_VAR_vault_check_timeout = 5m
 
+# Nomad variables
+export PKR_VAR_nomad_region = global
+
 # Source environment variables
 -include .env
 
