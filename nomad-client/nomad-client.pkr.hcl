@@ -315,8 +315,8 @@ build {
   # Copy the binary.
   provisioner "file" {
     only = [
-      "amazon-ebs.consul-server",
-      "googlecompute.consul-server",
+      "amazon-ebs.nomad-client",
+      "googlecompute.nomad-client",
     ]
 
     source      = "./tmp/nomad"
@@ -329,6 +329,7 @@ build {
     only   = ["amazon-ebs.nomad-client"]
     inline = ["sh /tmp/setup-amazon-ebs.sh"]
 
+    pause_before     = "5s"
     environment_vars = local.environment_vars
   }
 
@@ -337,6 +338,7 @@ build {
     only   = ["googlecompute.nomad-client"]
     inline = ["sh /tmp/setup-googlecompute.sh"]
 
+    pause_before     = "5s"
     environment_vars = local.environment_vars
   }
 

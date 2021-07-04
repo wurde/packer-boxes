@@ -72,6 +72,11 @@ variable "vault_check_timeout" {
   type        = string
 }
 
+variable "vault_cluster_name" {
+  description = "Specifies the identifier for the Vault cluster."
+  type        = string
+}
+
 # The locals block, also called the local-variable
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
@@ -87,6 +92,7 @@ locals {
     "DOCKER_DATACENTER=${var.docker_datacenter}",
     "VAULT_UI_ENABLED=${var.vault_ui_enabled}",
     "VAULT_CHECK_TIMEOUT=${var.vault_check_timeout}",
+    "VAULT_CLUSTER_NAME=${var.vault_cluster_name}",
   ]
 }
 
@@ -327,8 +333,8 @@ build {
   # Copy the binary.
   provisioner "file" {
     only = [
-      "amazon-ebs.consul-server",
-      "googlecompute.consul-server",
+      "amazon-ebs.vault-server",
+      "googlecompute.vault-server",
     ]
 
     source      = "./tmp/vault"
@@ -341,6 +347,7 @@ build {
     only   = ["amazon-ebs.vault-server"]
     inline = ["sh /tmp/setup-amazon-ebs.sh"]
 
+    pause_before     = "5s"
     environment_vars = local.environment_vars
   }
 
@@ -349,6 +356,7 @@ build {
     only   = ["googlecompute.vault-server"]
     inline = ["sh /tmp/setup-googlecompute.sh"]
 
+    pause_before     = "5s"
     environment_vars = local.environment_vars
   }
 
