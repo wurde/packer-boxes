@@ -34,8 +34,8 @@ mkdirVaultConfig() {
 configureVault() {
   echo "Configuring Vault"
 
-  cat << EOF | tee /etc/vault.d/vault.hcl
-cluster_name = ${VAULT_CLUSTER_NAME}
+  cat << EOF | sudo tee /etc/vault.d/vault.hcl
+cluster_name = "${VAULT_CLUSTER_NAME}"
 
 storage "inmem" {}
 
@@ -56,7 +56,7 @@ ui = ${VAULT_UI_ENABLED}
 default_lease_ttl = "1h"
 max_lease_ttl     = "720h"
 EOF
-  chown vault:vault /etc/vault.d/vault.hcl
+  sudo chown vault:vault /etc/vault.d/vault.hcl
 }
 
 configureSystemd() {
