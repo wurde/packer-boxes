@@ -51,6 +51,10 @@ export PKR_VAR_consul_port_sidecar_max_port = 21255
 export PKR_VAR_consul_port_expose_min_port = 21500
 export PKR_VAR_consul_port_expose_max_port = 21755
 
+# Vault variables
+export PKR_VAR_vault_ui_enabled = false
+export PKR_VAR_vault_check_timeout = 5m
+
 # Source environment variables
 -include .env
 

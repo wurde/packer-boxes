@@ -62,6 +62,16 @@ variable "docker_datacenter" {
   type        = string
 }
 
+variable "vault_ui_enabled" {
+  description = "Enables Vault's built-in web UI service."
+  type        = bool
+}
+
+variable "vault_check_timeout" {
+  description = "Specifies the check interval used to send health check information back to Consul."
+  type        = string
+}
+
 # The locals block, also called the local-variable
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
@@ -75,6 +85,8 @@ locals {
     "AWS_DATACENTER=${var.aws_datacenter}",
     "GCP_DATACENTER=${var.gcp_datacenter}",
     "DOCKER_DATACENTER=${var.docker_datacenter}",
+    "VAULT_UI_ENABLED=${var.vault_ui_enabled}",
+    "VAULT_CHECK_TIMEOUT=${var.vault_check_timeout}",
   ]
 }
 
