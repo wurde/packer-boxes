@@ -70,6 +70,9 @@ docker exec -it [container-id] bash
 
 # Check the container logs
 docker logs [container-id]
+
+# Remove orphaned images
+docker image prune --all
 ```
 
 The following images are used:

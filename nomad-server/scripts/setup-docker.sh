@@ -11,7 +11,8 @@ updatePackages() {
 setTimezone() {
   echo "Setting timezone to UTC"
   DEBIAN_FRONTEND=noninteractive apt-get install -yq tzdata
-  cp --force /usr/share/zoneinfo/UTC /etc/localtime
+  rm --force /etc/localtime
+  cp /usr/share/zoneinfo/UTC /etc/localtime
   echo "UTC" > /etc/timezone
 }
 

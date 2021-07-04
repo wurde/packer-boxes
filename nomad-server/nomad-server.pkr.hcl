@@ -271,25 +271,25 @@ source "docker" "nomad-server" {
   # Set a message for the commit.
   message = "Build nomad-server-docker-${local.timestamp}."
 
-  #  changes = [
-  #    # Expose the data directory as a volume since there's
-  #    # mutable state in there.
-  #    "VOLUME /nomad/data",
-  #
-  #    # Open the network ports used for different services
-  #    # required by the Nomad agent.
-  #    "EXPOSE 4646 4647 4648",
-  #
-  #    # Nomad doesn't need root privileges so we run it as
-  #    # the consul user from the entry point script. The entry
-  #    # point script also uses dumb-init as the top-level
-  #    # process to reap any zombie processes created by Consul
-  #    # sub-processes.
-  #    "ENTRYPOINT [\"docker-entrypoint.sh\"]",
-  #
-  #    # Provide default arguments to ENTRYPOINT.
-  #    "CMD [\"agent\", \"-dev\", \"-config=/etc/nomad.d/\"]"
-  #  ]
+  changes = [
+    # Expose the data directory as a volume since there's
+    # mutable state in there.
+    "VOLUME /nomad/data",
+
+    # Open the network ports used for different services
+    # required by the Nomad agent.
+    "EXPOSE 4646 4647 4648",
+
+    # Nomad doesn't need root privileges so we run it as
+    # the consul user from the entry point script. The entry
+    # point script also uses dumb-init as the top-level
+    # process to reap any zombie processes created by Consul
+    # sub-processes.
+    "ENTRYPOINT [\"/usr/bin/nomad\"]",
+
+    # Provide default arguments to ENTRYPOINT.
+    "CMD [\"agent\", \"-dev\", \"-config=/etc/nomad.d/\"]"
+  ]
 }
 
 # The build block defines what builders are  started, how
