@@ -1,0 +1,19 @@
+#!/usr/bin/dumb-init /bin/sh
+set -e
+# Exit immediately if a command exits with a non-zero status.
+
+# Note above that we run dumb-init as PID 1. This is reaps
+# zombie processes as well as forward signals to all
+# processes in its session. Normally, sh wouldn't do either
+# of these functions so we'd leak zombies as well as do
+# unclean termination of all our sub-processes. As of
+# docker 1.13, using docker run --init achieves the same
+# outcome.
+
+# If the user is trying to run Nomad directly with some arguments, then
+# pass them to Nomad.
+if [ "${1:0:1}" = '-' ]; then
+    set -- nomad "$@"
+fi
+
+exec "$@"

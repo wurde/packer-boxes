@@ -1,10 +1,5 @@
 #!/bin/sh
 
-setTimezone() {
-  echo "Setting timezone to UTC"
-  timedatectl set-timezone UTC
-}
-
 # Ubuntu instances use the apt-get package manager. It can
 # install, remove, and update software.
 updatePackages() {
@@ -12,10 +7,32 @@ updatePackages() {
   apt-get update -y
 }
 
+# `date` => UTC
+setTimezone() {
+  echo "Setting timezone to UTC"
+  DEBIAN_FRONTEND=noninteractive apt-get install -yq tzdata
+  cp --force /usr/share/zoneinfo/UTC /etc/localtime
+  echo "UTC" > /etc/timezone
+}
+
+# dumb-init is a simple process supervisor that
+# forwards signals to children. It is designed
+# to run as PID1 in minimal container environments.
+installDumbInit() {
+  echo "Installing dumb-init"
+  apt-get install -y dumb-init
+}
+
 moveNomad() {
   echo "Moving the Nomad binary"
   chown root:root /tmp/nomad
   mv /tmp/nomad /usr/bin/nomad
+}
+
+moveDockerEntrypoint() {
+  echo "Moving the Docker ENTRYPOINT"
+  chmod 755 /tmp/docker-entrypoint
+  mv /tmp/docker-entrypoint /bin/docker-entrypoint
 }
 
 adduserNomad() {
@@ -65,9 +82,11 @@ EOF
 main() {
   echo "Running"
 
-  setTimezone
   updatePackages
+  setTimezone
+  installDumbInit
   moveNomad
+  moveDockerEntrypoint
   adduserNomad
   mkdirNomadConfig
   mkdirNomadData
