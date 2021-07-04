@@ -320,7 +320,7 @@ build {
     ]
 
     source      = "./tmp/vault"
-    destination = "/tmp"
+    destination = "/tmp/vault"
     generated   = true
   }
 

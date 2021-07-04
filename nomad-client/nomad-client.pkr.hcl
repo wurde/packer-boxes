@@ -320,7 +320,7 @@ build {
     ]
 
     source      = "./tmp/nomad"
-    destination = "/tmp"
+    destination = "/tmp/nomad"
     generated   = true
   }
 

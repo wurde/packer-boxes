@@ -425,7 +425,7 @@ build {
     ]
 
     source      = "./tmp/consul"
-    destination = "/tmp"
+    destination = "/tmp/consul"
     generated   = true
   }
 
