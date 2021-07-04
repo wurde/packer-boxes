@@ -34,8 +34,8 @@ storage "inmem" {}
 
 ui = ${VAULT_UI_ENABLED}
 
-default_lease_ttl = 1h
-max_lease_ttl     = 720h
+default_lease_ttl = "1h"
+max_lease_ttl     = "720h"
 EOF
   chown vault:vault /vault/config/vault.hcl
 }
