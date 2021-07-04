@@ -44,19 +44,17 @@ createEncryptionKey() {
   encryption_key=$(consul keygen)
 }
 
-createCertificateAuthority() {
+setupTlsCertificates() {
   echo "Creating a Consul Certificate Authority"
-  cd /etc/consul.d
+  cd /consul/config
+  sudo mkdir -p /etc/pki/tls/certs && cd /etc/pki/tls/certs
   sudo consul tls ca create
-  sudo chown --recursive consul:consul /etc/consul.d
-}
 
-createTlsCertificates() {
   echo "Generating TLS certificates for RPC encryption"
+  sudo mkdir -p /etc/pki/tls/private
   sudo consul tls cert create -server -dc $AWS_DATACENTER
-  sudo consul tls cert create -server -dc $AWS_DATACENTER
-  sudo consul tls cert create -server -dc $AWS_DATACENTER
-  sudo chown --recursive consul:consul /etc/consul.d
+
+  sudo mv *-key.pem /etc/pki/tls/private
 }
 
 configureConsul() {
@@ -67,9 +65,9 @@ node_name  = "aws-${CONSUL_NODE_NAME}"
 datacenter = "${AWS_DATACENTER}"
 data_dir   = "/opt/consul"
 encrypt    = "${encryption_key}"
-ca_file    = "/etc/consul.d/consul-agent-ca.pem"
-cert_file  = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0.pem"
-key_file   = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0-key.pem"
+ca_file    = "/etc/pki/tls/certs/consul-agent-ca.pem"
+cert_file  = "/etc/pki/tls/certs/${AWS_DATACENTER}-server-consul-0.pem"
+key_file   = "/etc/pki/tls/private/${AWS_DATACENTER}-server-consul-0-key.pem"
 
 verify_incoming        = true
 verify_outgoing        = true
@@ -167,8 +165,7 @@ main() {
   mkdirConsulConfig
   mkdirConsulData
   createEncryptionKey
-  createCertificateAuthority
-  createTlsCertificates
+  setupTlsCertificates
   configureConsul
   configureServer
   configureSystemd
