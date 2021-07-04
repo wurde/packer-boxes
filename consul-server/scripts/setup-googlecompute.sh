@@ -99,8 +99,8 @@ configureServer() {
   echo "Configuring Consul server"
 
   cat << EOF | sudo tee /etc/consul.d/server.hcl
-server = true
-client_addr = "${CLIENT_ADDR}"
+server           = true
+client_addr      = "${CLIENT_ADDR}"
 bootstrap_expect = ${BOOTSTRAP_EXPECT}
 
 ports {
