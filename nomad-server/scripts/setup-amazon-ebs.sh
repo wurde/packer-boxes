@@ -28,8 +28,6 @@ mkdirNomadConfig() {
   sudo mkdir --parents /etc/nomad.d
   sudo touch /etc/nomad.d/nomad.hcl
   sudo chmod 640 /etc/nomad.d/nomad.hcl
-  sudo touch /etc/nomad.d/server.hcl
-  sudo chmod 640 /etc/nomad.d/server.hcl
   sudo chown --recursive nomad:nomad /etc/nomad.d
 }
 
@@ -79,7 +77,7 @@ ConditionFileNotEmpty=/etc/nomad.d/nomad.hcl
 Type=notify
 User=nomad
 Group=nomad
-ExecStart=/usr/bin/nomad agent -config-dir=/etc/nomad.d/
+ExecStart=/usr/bin/nomad agent -dev -config=/etc/nomad.d/
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process
 KillSignal=SIGTERM
