@@ -41,7 +41,7 @@ configureNomad() {
   echo "Configuring Nomad"
 
   cat << EOF | sudo tee /etc/nomad.d/nomad.hcl
-datacenter = "${DOCKER_DATACENTER}"
+datacenter = "${AWS_DATACENTER}"
 region     = "${NOMAD_REGION}"
 
 data_dir = "/nomad/data"
