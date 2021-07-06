@@ -53,6 +53,10 @@ server {
   enabled = true
 }
 
+client {
+  enabled = true
+}
+
 ports {
   http = ${NOMAD_PORT_HTTP}
   rpc  = ${NOMAD_PORT_RPC}

@@ -70,6 +70,12 @@ server {
   enabled = false
 }
 
+client {
+  enabled = true
+
+  network_interface = "lo"
+}
+
 ports {
   http = ${NOMAD_PORT_HTTP}
   rpc  = ${NOMAD_PORT_RPC}
