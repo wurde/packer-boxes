@@ -61,6 +61,7 @@ export PKR_VAR_nomad_region = global
 export PKR_VAR_nomad_port_http = 4646
 export PKR_VAR_nomad_port_rpc = 4647
 export PKR_VAR_nomad_port_serf = 4648
+export PKR_VAR_nomad_raft_multiplier = 5
 
 # Source environment variables
 -include .env

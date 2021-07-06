@@ -63,7 +63,7 @@ variable "docker_datacenter" {
 }
 
 variable "nomad_region" {
-  description = " Specifies the region the Nomad agent is a member of."
+  description = "Specifies the region the Nomad agent is a member of."
   type        = string
 }
 
@@ -79,6 +79,11 @@ variable "nomad_port_rpc" {
 
 variable "nomad_port_serf" {
   description = "The port used for the gossip protocol for cluster membership."
+  type        = number
+}
+
+variable "nomad_raft_multiplier" {
+  description = "An integer multiplier used by Nomad servers to scale key Raft timing parameters."
   type        = number
 }
 
@@ -99,6 +104,7 @@ locals {
     "NOMAD_PORT_HTTP=${var.nomad_port_http}",
     "NOMAD_PORT_RPC=${var.nomad_port_rpc}",
     "NOMAD_PORT_SERF=${var.nomad_port_serf}",
+    "NOMAD_RAFT_MULTIPLIER=${var.nomad_raft_multiplier}",
   ]
 }
 
@@ -296,7 +302,7 @@ source "docker" "nomad-server" {
 
     # Open the network ports used for different services
     # required by the Nomad agent.
-    "EXPOSE 4646 4647 4648",
+    "EXPOSE ${var.nomad_port_http} ${var.nomad_port_rpc} ${var.nomad_port_serf}",
 
     # Nomad doesn't need root privileges so we run it as
     # the consul user from the entry point script. The entry

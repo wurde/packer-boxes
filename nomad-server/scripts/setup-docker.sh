@@ -69,12 +69,13 @@ bind_addr = "0.0.0.0"
 server {
   enabled          = true
   bootstrap_expect = 1
+  raft_multiplier  = ${NOMAD_RAFT_MULTIPLIER}
 }
 
 ports {
-  http = 4646
-  rpc  = 4647
-  serf = 4648
+  http = ${NOMAD_PORT_HTTP}
+  rpc  = ${NOMAD_PORT_RPC}
+  serf = ${NOMAD_PORT_SERF}
 }
 EOF
   chown nomad:nomad /etc/nomad.d/nomad.hcl

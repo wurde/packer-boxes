@@ -18,119 +18,65 @@ moveNomad() {
   sudo mv /tmp/nomad /usr/bin/nomad
 }
 
-adduserConsul() {
-  echo "Creating a non-privileged user to run Consul"
-  sudo useradd --system --user-group  --home /etc/consul.d --shell /bin/false consul
+adduserNomad() {
+  echo "Creating a non-privileged user to run Nomad"
+  sudo useradd --system --user-group  --home /etc/nomad.d --shell /bin/false nomad
 }
 
-mkdirConsulConfig() {
-  echo "Creating Consul's configuration directory"
-  sudo mkdir --parents /etc/consul.d
-  sudo touch /etc/consul.d/consul.hcl
-  sudo chmod 640 /etc/consul.d/consul.hcl
-  sudo touch /etc/consul.d/server.hcl
-  sudo chmod 640 /etc/consul.d/server.hcl
-  sudo chown --recursive consul:consul /etc/consul.d
+mkdirNomadConfig() {
+  echo "Creating Nomad's configuration directory"
+  sudo mkdir --parents /etc/nomad.d
+  sudo touch /etc/nomad.d/nomad.hcl
+  sudo chmod 640 /etc/nomad.d/nomad.hcl
+  sudo chown --recursive nomad:nomad /etc/nomad.d
 }
 
-mkdirConsulData() {
-  echo "Creating Consul's data directory"
-  sudo mkdir --parents /consul/data
-  sudo chown --recursive consul:consul /consul/data
+mkdirNomadData() {
+  echo "Creating Nomad's data directory"
+  sudo mkdir --parents /nomad/data
+  sudo chown --recursive nomad:nomad /nomad/data
 }
 
-createEncryptionKey() {
-  echo "Generating a new 32-byte encryption key"
-  encryption_key=$(consul keygen)
-}
+configureNomad() {
+  echo "Configuring Nomad"
 
-createCertificateAuthority() {
-  echo "Creating a Consul Certificate Authority"
-  cd /etc/consul.d
-  sudo consul tls ca create
-  sudo chown --recursive consul:consul /etc/consul.d
-}
-
-createTlsCertificates() {
-  echo "Generating TLS certificates for RPC encryption"
-  sudo consul tls cert create -server -dc $AWS_DATACENTER
-  sudo consul tls cert create -server -dc $AWS_DATACENTER
-  sudo consul tls cert create -server -dc $AWS_DATACENTER
-  sudo chown --recursive consul:consul /etc/consul.d
-}
-
-configureConsul() {
-  echo "Configuring Consul"
-
-  cat << EOF | sudo tee /etc/consul.d/consul.hcl
-node_name = "aws-${CONSUL_NODE_NAME}"
+  cat << EOF | sudo tee /etc/nomad.d/nomad.hcl
 datacenter = "${AWS_DATACENTER}"
-data_dir = "/consul/data"
-encrypt = "${encryption_key}"
-ca_file = "/etc/consul.d/consul-agent-ca.pem"
-cert_file = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0.pem"
-key_file = "/etc/consul.d/${AWS_DATACENTER}-server-consul-0-key.pem"
-verify_incoming = true
-verify_outgoing = true
-verify_server_hostname = true
-retry_join = ["provider=aws tag_key=Consul-Auto-Join tag_value=main region=${AWS_REGION}"]
+region     = "${NOMAD_REGION}"
 
-performance {
-  raft_multiplier = ${RAFT_MULTIPLIER}
+data_dir = "/nomad/data"
+
+bind_addr = "0.0.0.0"
+
+server {
+  enabled = true
 }
 
 ports {
-  dns      = ${CONSUL_PORT_DNS}
-  http     = ${CONSUL_PORT_HTTP}
-  https    = ${CONSUL_PORT_HTTPS}
-  grpc     = ${CONSUL_PORT_GRPC}
-  serf_lan = ${CONSUL_PORT_SERF_LAN}
-
-  sidecar_min_port = ${CONSUL_PORT_SIDECAR_MIN_PORT}
-  sidecar_max_port = ${CONSUL_PORT_SIDECAR_MAX_PORT}
-  expose_min_port  = ${CONSUL_PORT_EXPOSE_MIN_PORT}
-  expose_max_port  = ${CONSUL_PORT_EXPOSE_MAX_PORT}
+  http = ${NOMAD_PORT_HTTP}
+  rpc  = ${NOMAD_PORT_RPC}
+  serf = ${NOMAD_PORT_SERF}
 }
 EOF
-  sudo chown consul:consul /etc/consul.d/consul.hcl
-}
-
-configureServer() {
-  echo "Configuring Consul server"
-
-  cat << EOF | sudo tee /etc/consul.d/server.hcl
-server = true
-client_addr = "${CLIENT_ADDR}"
-bootstrap_expect = ${BOOTSTRAP_EXPECT}
-
-ports {
-  serf_wan = ${CONSUL_PORT_SERF_WAN}
-  server   = ${CONSUL_PORT_SERVER}
-}
-
-ui_config {
-  enabled = ${CONSUL_UI_ENABLED}
-}
-EOF
-  sudo chown consul:consul /etc/consul.d/server.hcl
+  sudo chown nomad:nomad /etc/nomad.d/nomad.hcl
 }
 
 configureSystemd() {
-  echo "Configuring the Consul process"
+  echo "Configuring the Nomad process"
 
-  cat << EOF | sudo tee /usr/lib/systemd/system/consul.service
+  cat << EOF | sudo tee /usr/lib/systemd/system/nomad.service
 [Unit]
-Description="HashiCorp Consul - A service mesh solution"
-Documentation=https://www.consul.io/
+Description="HashiCorp Nomad - A workload orchestration service"
+Documentation=https://www.nomadproject.io/
 Requires=network-online.target
 After=network-online.target
-ConditionFileNotEmpty=/etc/consul.d/consul.hcl
+ConditionFileNotEmpty=/etc/nomad.d/nomad.hcl
 
 [Service]
 Type=notify
-User=consul
-Group=consul
-ExecStart=/usr/bin/consul agent -config-dir=/etc/consul.d/
+User=nomad
+Group=nomad
+ExecStart=/usr/bin/nomad agent -client -config=/etc/nomad.d/
 ExecReload=/bin/kill --signal HUP $MAINPID
 KillMode=process
 KillSignal=SIGTERM
@@ -142,17 +88,12 @@ WantedBy=multi-user.target
 EOF
 }
 
-validateConfig() {
-  echo "Validating the Consul configuration"
-  sudo consul validate /etc/consul.d/consul.hcl
-}
-
-startConsul() {
-  echo "Starting the Consul service"
+startNomad() {
+  echo "Starting the Nomad service"
   sudo systemctl daemon-reload
-  sudo systemctl enable consul
-  sudo systemctl restart consul && sleep 5
-  sudo systemctl status consul
+  sudo systemctl enable nomad
+  sudo systemctl restart nomad && sleep 5
+  sudo systemctl status nomad
 }
 
 main() {
@@ -161,17 +102,12 @@ main() {
   setTimezone
   updatePackages
   moveNomad
-  # adduserConsul
-  # mkdirConsulConfig
-  # mkdirConsulData
-  # createEncryptionKey
-  # createCertificateAuthority
-  # createTlsCertificates
-  # configureConsul
-  # configureServer
-  # configureSystemd
-  # validateConfig
-  # startConsul
+  adduserNomad
+  mkdirNomadConfig
+  mkdirNomadData
+  configureNomad
+  configureSystemd
+  startNomad
 
   echo "Complete"
 }

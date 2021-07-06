@@ -62,6 +62,26 @@ variable "docker_datacenter" {
   type        = string
 }
 
+variable "nomad_region" {
+  description = "Specifies the region the Nomad agent is a member of."
+  type        = string
+}
+
+variable "nomad_port_http" {
+  description = "The port used to run the HTTP server."
+  type        = number
+}
+
+variable "nomad_port_rpc" {
+  description = "The port used for internal RPC communication between agents and servers, and for inter-server traffic for the consensus algorithm (raft)."
+  type        = number
+}
+
+variable "nomad_port_serf" {
+  description = "The port used for the gossip protocol for cluster membership."
+  type        = number
+}
+
 # The locals block, also called the local-variable
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
@@ -75,6 +95,10 @@ locals {
     "AWS_DATACENTER=${var.aws_datacenter}",
     "GCP_DATACENTER=${var.gcp_datacenter}",
     "DOCKER_DATACENTER=${var.docker_datacenter}",
+    "NOMAD_REGION=${var.nomad_region}",
+    "NOMAD_PORT_HTTP=${var.nomad_port_http}",
+    "NOMAD_PORT_RPC=${var.nomad_port_rpc}",
+    "NOMAD_PORT_SERF=${var.nomad_port_serf}",
   ]
 }
 
@@ -264,6 +288,26 @@ source "docker" "nomad-client" {
 
   # Set a message for the commit.
   message = "Build nomad-client-docker-${local.timestamp}."
+
+  changes = [
+    # Expose the data directory as a volume since there's
+    # mutable state in there.
+    "VOLUME /nomad/data",
+
+    # Open the network ports used for different services
+    # required by the Nomad agent.
+    "EXPOSE ${var.nomad_port_http} ${var.nomad_port_rpc} ${var.nomad_port_serf}",
+
+    # Nomad doesn't need root privileges so we run it as
+    # the consul user from the entry point script. The entry
+    # point script also uses dumb-init as the top-level
+    # process to reap any zombie processes created by Consul
+    # sub-processes.
+    "ENTRYPOINT [\"/usr/bin/nomad\"]",
+
+    # Provide default arguments to ENTRYPOINT.
+    "CMD [\"agent\", \"-client\", \"-config=/etc/nomad.d/\"]"
+  ]
 }
 
 # The build block defines what builders are  started, how
