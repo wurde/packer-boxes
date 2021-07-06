@@ -67,6 +67,21 @@ variable "nomad_region" {
   type        = string
 }
 
+variable "nomad_port_http" {
+  description = "The port used to run the HTTP server."
+  type        = number
+}
+
+variable "nomad_port_rpc" {
+  description = "The port used for internal RPC communication between agents and servers, and for inter-server traffic for the consensus algorithm (raft)."
+  type        = number
+}
+
+variable "nomad_port_serf" {
+  description = "The port used for the gossip protocol for cluster membership."
+  type        = number
+}
+
 # The locals block, also called the local-variable
 # block, defines locals within your Packer config.
 # https://www.packer.io/docs/templates/hcl_templates/blocks/locals
@@ -81,6 +96,9 @@ locals {
     "GCP_DATACENTER=${var.gcp_datacenter}",
     "DOCKER_DATACENTER=${var.docker_datacenter}",
     "NOMAD_REGION=${var.nomad_region}",
+    "NOMAD_PORT_HTTP=${var.nomad_port_http}",
+    "NOMAD_PORT_RPC=${var.nomad_port_rpc}",
+    "NOMAD_PORT_SERF=${var.nomad_port_serf}",
   ]
 }
 

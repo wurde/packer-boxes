@@ -58,6 +58,9 @@ export PKR_VAR_vault_check_timeout = 5m
 
 # Nomad variables
 export PKR_VAR_nomad_region = global
+export PKR_VAR_nomad_port_http = 4646
+export PKR_VAR_nomad_port_rpc = 4647
+export PKR_VAR_nomad_port_serf = 4648
 
 # Source environment variables
 -include .env

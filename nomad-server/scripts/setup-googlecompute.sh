@@ -54,9 +54,9 @@ server {
 }
 
 ports {
-  http = 4646
-  rpc  = 4647
-  serf = 4648
+  http = ${NOMAD_PORT_HTTP}
+  rpc  = ${NOMAD_PORT_RPC}
+  serf = ${NOMAD_PORT_SERF}
 }
 EOF
   sudo chown nomad:nomad /etc/nomad.d/nomad.hcl
