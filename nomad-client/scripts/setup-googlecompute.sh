@@ -50,11 +50,13 @@ data_dir = "/nomad/data"
 bind_addr = "0.0.0.0"
 
 server {
-  enabled = true
+  enabled = false
 }
 
 client {
   enabled = true
+
+  network_interface = "lo"
 }
 
 ports {
